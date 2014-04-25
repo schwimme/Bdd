@@ -1,0 +1,427 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Úvod}
+V mnohých oblastiach informatiky je potrebné efektívne pracova» s funkciami nad
+binárnimi premennými. Mô¾e ís» napríklad o efektívnu reprezentáciu hardwarových
+komponént pri návrhu logických obvodov, reprezentáciu veµkých matíc v matematických
+knihovniach alebo o reprezentáciu stavového priestoru vo formálnej verifikácií.
+Existuje niekoµko prístupov pre repzrezentáciu týchto funkcií, prièom jedným z najpou¾ívanej¹ích
+sú binárne rozhodovacie diagramy(BDD).
+\par
+BDD reprezentuje funkciu nad binárnimi premennými kompaktne pomocou koreòového 
+acyklického orientovaného spojitého grafu. Nad týmto grafom sa dajú uplatòova»
+mnohé algoritmy, ktoré zni¾ujú jeho pamä»ovú aj èasovú nároènos».
+\par
+Úèelom práce je navrhnú» a implementova» vlastnú kni¾nicu pre prácu s BDD,
+porovna» výsledky s u¾ existujúcimi kni¾nicami. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Binárne rozhodovacie diagramy}
+Táto kapitola sa venuje vzniku a základnému princípu práce s BDD.
+\par
+Binárne rozhodovacie stromy, anglicky {\it \uv{Binary Decision Diagrams}}, je dátová ¹truktúra
+vyu¾ívaná v~rôznych odvetviach informatiky. Reprezentuje sa rôzne, èi u¾ graficky v~podobe
+acyklického koreòového grafu, matematickými zápismi, alebo logickými funkciami.
+%
+% http://www.math.fme.vutbr.cz/download.aspx?id_file=3582
+%
+%
+\section{Výroková logika}
+Výroková logika skúma spôsoby tvorby zlo¾ených výrokov z jednoduchých a pravdivos» (nepravdivos»)
+zlo¾eného výroku v závislosti od pravdivosti jednoduchých z ktorých je zlo¾ený.
+\par
+Buï $P$ neprázdna mno¾ina prvotných formúl, ktoré hrajú úlohu jednoduchých výrokov.
+Z jednoduchých výrokov získaváme zlo¾ené výroky spájaním pomocou logických spojok.
+Poznáme nasledujúce logické spojky:
+\begin{itemize}
+\item{$\neg$ negácia}
+\item{$\vee$ disjunkcia}
+\item{$\wedge$ konjunkcia}
+\item{$\rightarrow$ implikácia}
+\item{$\equiv$ ekvivalencia}
+\end{itemize}
+Symbolmi jazyka $L_P$ výrokovej logiky nad mno¾inou $P$ sú prvky mno¾iny $P$, logické
+spojky a zátvorky (,). Skladanie Zlo¾ených výrokov sa riadí týmito pravidlami:
+\begin{enumerate}
+\item Ka¾dá prvotná formula $p\in P$ je výroková formula.
+\item Pokiaµ sú $A$, $B$ výrokové formule, potom ($\neg A$),($A\vee B$),($A\wedge B$),
+($A\rightarrow B$) a ($A\equiv B$) sú výrokové formule.
+\item Ka¾dá výroková formula je poskladaná koneèným poètom symbolov jazyka $L_P$,
+ktorá vznikne podµa predchádzajúcich pravidiel.
+\end{enumerate}
+\par
+Pravdivostné ohodnotenie prvotných formulí je µubovoµné zobrazenie mno¾iny $P$ na
+hodnoty {\it true} a {\it false}. Pre jednoduchos» budeme znaèi» {\it true} 1 a {\it false} 0.
+Formálny zápis je $v:P\rightarrow\{0,1\}$. Indukciou podµa zlo¾itosti formule definujeme
+rozlo¾enie $w$ na zobrazenie $v$ na mno¾inu v¹etkých formulí jazyka $L_P$.
+\begin{enumerate}
+\item $w(p)=v(p)$ pre v¹etky $p\in P$
+\item pokiaµ $A$, $B$ sú výrokové formule, potom $w(\neg A)$, $w(A\vee B)$, $w(A\wedge B)$, 
+$w(A\rightarrow B)$ a~$w(A\equiv B)$  v závistosti od $w(A)$ a~$w(B)$ sa definujú podµa 
+nasledujúcej tabuµky:
+\end{enumerate}
+\begin{center}
+\begin{tabular}{|c|c||c|c|c|c|c|}
+\hline
+$w(A)$ & $w(B)$ & $w(\neg A)$ & $w(A\vee B)$ & $w(A\wedge B)$ &
+$w(A\rightarrow B)$ & $w(A\equiv B)$ \\
+\hline
+0 & 0 & 0 & 0 & 0 & 0 & 0 \\ 
+0 & 1 & 0 & 0 & 0 & 0 & 1 \\ 
+1 & 0 & 0 & 0 & 1 & 1 & 0 \\ 
+1 & 1 & 0 & 1 & 0 & 1 & 0 \\ \hline
+\end{tabular}
+\end{center}
+\subsection{Mo¾nosti reprezentácie funckií}
+Logické funkcie sa mô¾u reprezentova» rôznymi spôsobmi. Najèastej¹ie vyjadrenie je v podobe matematického
+vzorca za pomoci vy¹¹ie spomínaných operátorov a funckií. Ma» v¹ak v poèítaèi funkciu ulo¾enú ako textový
+re»azec veµmi komplikuje prácu s òou, preto sa vyvynuli rôzne dal¹ie reprezentácie. Operátory logických 
+funckií sa väè¹inou prevádzajú po rade z $\vee, \wedge, \neg$ na $+, *, !$
+\paragraph{Pravdivostná tabuµka}
+Najprehµadnej¹í a najµah¹ie nauèiteµný typ uchovávania logickej funkcie, bohu¾ial obsahuje veµké mno¾stvo 
+redundancie a mô¾e ma» veµké pamä»ové nároky ($2^n$, kde $n$ je poèet premenných funkcie).
+\paragraph{Karnaughova mapa}
+¥ahko nauèiteµný formát s rovnakou pamä»ovou zlo¾itos»ou zlo¾itos»ou ako pravdivostná tabuµka. Veµmi vhodný
+na minimalizáciu.
+\paragraph{Logický obvod}
+Nie moc prehµadný ani µahko nauèiteµný formát, ale vynikajúcí na demo¹tráciu pokroèilých systémov zlo¾ených
+z logických funkcií
+\paragraph{BDD}
+Formát v podobe acyklického koreòového grafu, ktorému sa budeme ïalej venova» v kapitole \ref{TypyBDD}
+\par
+Existuje veµké mno¾stvo rôznych popisov logickej funkcie, z ktorých ka¾dý má svoje výhody aj nevýhody.
+V prípade potreby nie je problém vytvori» vlasnú konvenciu pre zápis funkcie. Vo väè¹ine prípadov by
+¹lo v¹ak iba o podmno¾inu u¾ existujúcej konvencie.
+\subsection{Minimalizácia}
+Minimalizácia logickej funkcie je proces zni¾ovania pamä»ových nárokov funkcie. V podstate ide oba o odstránenie
+redundancí v ulo¾enej ¹truktúre. V prípade matematického popisu mô¾e ís» o uplatnenie rôznych výrokových teorémov
+a viet. Podrobnéj minimalizácií BDD sa budeme venova» v kapitole \ref{TypyBDD}.
+\subsection{Poèet funkcií}\label{logfce}
+Poèet mo¾ných správaní sa logickej funkcie závisí od poètu premenných, ktoré ju ovplyvòujú a poètu hodnôt,
+ktoré ka¾dá premenná mô¾e nadobudnú». V podstate ide o jednoduchú kombinatoriku, kde zis»ujeme v¹etky
+variacie vstupných hodnôt, teda $p=n^k$, kde $n$ je poèet hodnôt, ktoré mô¾e nadobúda» vstupná premenná, 
+$k$ poèet vstupných premenných a $p$ je výsedny poèet mo¾ných vstupov funkcie.
+\par
+Výsledný poèet funkcií je permutácia závisiaca od poètu mo¾ných vstupných kombinácií a poètu hodnôt, ktoré
+mô¾e nadobúda» výstup funkcie, teda $r=q^p$, kde $p$ je poèet vstupných kombinácií, $q$ je poèet hodnôt, 
+ktoré mô¾e výstpná premenná nadobúda» a $r$ je poèet funkcií danej funkcie. Z tohto dostávame vzorec
+\begin{equation}
+r=q^{n^{k}}
+\end{equation}
+Názornej¹ie vyjadrenie je pomocou tabuµky pre dve vstupné premenné ($k$=2), dve vstupné hodnoty 
+($n$=2) a dve výstupné hodnoty ($q$=2) $\rightarrow 2^{2^2}=16$ funkcií\\
+
+\begin{center}
+\begin{tabular}{|c|c||c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
+\hline
+\multicolumn{2}{|c||}{Vstup}&\multicolumn{16}{c|}{Výstup} \\ \hline
+% x & y  \\ \hline
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 \\ \hline
+0 & 1 & 0 & 0 & 0 & 0 & 1 & 1 & 1 & 1 & 0 & 0 & 0 & 0 & 1 & 1 & 1 & 1 \\ \hline
+1 & 0 & 0 & 0 & 1 & 1 & 0 & 0 & 1 & 1 & 0 & 0 & 1 & 1 & 0 & 0 & 1 & 1 \\ \hline
+1 & 1 & 0 & 1 & 0 & 1 & 0 & 1 & 0 & 1 & 0 & 1 & 0 & 1 & 0 & 1 & 0 & 1 \\ \hline
+\end{tabular}
+\end{center} 
+
+\section{História}
+BDD vznikli z~dôvodu úspornej¹iej reprezentácie logických funckií. Táto reprezentácia je
+navrhnutá na základe Shanonovho expazného teorému. Táto dátová ¹truktúra od vzniku 
+v~1959 pre¹la mnohými úpravami na zní¾enie èasovej a~pamä»ovej nároènosti.
+\par
+Najvýznamnej¹ím milníkom v~oblasti redukcie pamä»ovej nároènosti bola ¹túdia R. E. 
+Bryanta z~Univerzity Carnegie Mellon. Táto ¹túdia sa týka najmä poradia premenných 
+a~zdieµania podgrafov. Toto sa dá poklada» za vznik ROBDD popísaných v~sekcií \ref{ROBDD}.
+\section{Matematický popis} %vojnarove slidy
+BDD je reprezentácia logickej funkcie $\{0,1\}^k\rightarrow\{0,1\},k\geq 0$. 
+Z pohµadu teorie grafov sa jedná o koreòový, orientovaný, spojitý acyklický graf.
+Formálna definícia BDD nad mno¾inou premenných $M$ je
+\begin{equation}
+G=(N,T,var,low,high,root,val)
+\end{equation}
+\begin{itemize}
+\item $N$ - koneèná mno¾ina neterminálnych stavov (uzlov).
+\item $T$ - koneèná mno¾ina terminálnych stavov (listov), $N\cap T=\emptyset$.
+\item $var : N\rightarrow M$ je interné pomenovanie uzlov.
+\item $low, high : N\rightarrow N\cup T$ prechodová funkcia definuje vysokého
+a nízkeho následníka pre daný úzol $n\in N$ pre premennú $var(n)$ so vstupom $0$ alebo $1$.
+\begin{itemize}
+\item graf je acyklický teda $\neg \exists n \in N.n(low\cup high)^+n$.
+\end{itemize}
+\item $root \in N\cup T$ je koreò grafu, teda $\forall n \in (N\cup T)\backslash\{root\}.root(low\cup high)^+n$.
+Vstupné hrany do uzlú $root$ by poru¹ili acyklicitu grafu.
+\item $val : T\rightarrow \{0,1\}$ je mapovacia funkcia hodnôt terminálnych uzlov
+\end{itemize}
+\section{Procedúra {\it Apply()}}
+Procedúra {\it Apply()} aplikuje booleovskú funkciu na BDD. Mô¾e by» unárna, alebo
+binárna, výnimoène ternárna. Procedúre sú predané v¹etky BDD s ktorými pracuje
+a odkaz na funkciu, ktorú má vykona». Poèet funkcií je odvodený v kapitole \ref{logfce}.
+Výsledkom procedúry je jedno BDD.
+\par
+Princíp práce funkcie je rekurzívny zostup od koreòa a¾ k terminálnym uzlom. Keï sa funkcia nachádza
+v bode, ¾e pre oba stromy pre¹la rovnakú cestu a v oboch stromoch sa nachádza na terminálnom uzle,
+zapí¹e sa táto cesta do nového stromu a novému terminálnemu uzlu sa priradí hodnota výsledku
+po¾adovanej logickej funkcie nad dvoma pôvodnými terminálnymi uzlami.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Typy BDD}\label{TypyBDD}
+V tejto kapitole si popí¹eme niektoré základné typi BDD, zdôrazníme rozdiely medzi nimi a objasníme, 
+v èom sú niektoré efektívnej¹ie ako iné. Základné princípy budeme demon¹trova» na funkcii
+\begin{equation}
+f(x_1,x_2,x_3)=(\neg x_1\wedge \neg x_2 \wedge \neg x_3)\vee(x_1\wedge \neg x_2\wedge \neg x_3)\vee(x_1\wedge x_2\wedge \neg x_3)
+\end{equation}
+\par
+V texte budeme pou¾íva» nasledujúcu notáciu
+\begin{itemize}
+\item premenné sa znaèia $x_i$, kde $i$ je poradie premennej
+\item uzly sa znaèia písmenom $n_{ij}$, kde $i$ je index premennej a $j$ je poradové èíslo
+uzlu oznaèovaného premennou
+\end{itemize}
+Príklad: $n_{23}$ znaèí tretí uzol premennéj $x_2$.
+\section{BDD}\label{ROBDD}
+BDD sa vytvára ako koreòový graf. Koreò tvorí jedna z premenných, väè¹inou sa berie prvá premenná funkcie, teda
+v na¹om prípade $x_1$. Vytvoríme teda uzol $n_{11}$, ktorý je mapovaný na premennú $x_1$. Premenná mô¾e
+nadobúda» dvoch hodnôt, pre ktoré sú definované nasledujúce uzly mapované na nasledujúcu premennú (uzly $n_{21}$ 
+a $n_{22}$ mapované na premennú $x_2$). Takto sa postupne zanorujeme, a¾ prejdeme cez v¹etky premenné a vygenerujeme
+v¹etky potrebné uzly. Hodnoty priradené za uzly mapované na poslednú premennú sú terminálne uzly.
+Maximálny poèet generovaných uzlov je 
+\begin{equation} \label{pocetUzlov}
+\sum_{i=0}^{k} 2^i
+\end{equation}
+kde $k$ je poèet premenných.
+
+\subsection{Základné BDD}
+Grafické znázornenie na¹ej funkcie je na obrázku \ref{picBDD}.
+\begin{figure}[ht!]
+  \centering
+  \includegraphics[width=100mm]{pic/bdd1.jpg}
+  \caption{Základné BDD}
+  \label{picBDD}
+\end{figure}
+\paragraph{Notácia}
+Pre orientáciu v grafe je pou¾itá nasledujúca notácia
+\begin{enumerate}
+  \item Uzly
+    \begin{itemize}
+      \item znaèené krú¾kom
+      \item hierarchicky usporiadané podµa poradia vyhodnocovania
+      \item premenná ovplyvòujúca uzol je písaná vµavo
+    \end{itemize}
+  \item Hrany
+    \begin{itemize}
+      \item plná èiara vedie k vysokému následníkovi daného uzlu $high(n)$
+      \item preru¹ovaná èiara vedie k nízkemu následníkovi daného uzlu $low(n)$
+    \end{itemize}
+  \item Terminály
+    \begin{itemize}
+      \item symbol $\perp$ znaèí hodnotu $false$
+      \item symbol $\top$ znaèí hodnotu $true$
+    \end{itemize}
+\end{enumerate}
+\par
+Ako vidíme, pamä»ová zlo¾itos» je exponencialna, èo vlasne vidíme aj z rovnice \ref{pocetUzlov}. Èasová zlo¾itos»
+nájdutia daného terminálneho uzlu je logaritmická. Táto reprezentácia v¹ak obsahuje mnoho redundancie, preto sa
+nepou¾íva.
+\subsection{Redukované BDD}
+Poèet generovaných uzlov sa dá výrazne obmedzi» tým, ¾e sa nebudú generova» zbytoèné uzly.
+Pri pohµade na obrázok \ref{picBDD} vidíme redundanciu v terminálnych uzloch. Terminálne uzly mô¾eme zlúèi»
+do dvoch. Vzniká strom s redukovaným poètom terminálnych uzlov, ktorý je znázornený
+na obrázku \ref{picRBDD1}.
+\begin{figure}[ht!]
+  \centering
+  \includegraphics[width=100mm]{pic/bdd2.jpg}
+  \caption{BDD s redukovaným poètom terminálnych uzlov}
+  \label{picRBDD1}
+\end{figure}
+\par
+Ïal¹iou redukciou je zluèovanie izomorfných podstromov. Keï sa v BDD nachádzajú dva rôzne uzly, ktoré majú
+rovnaké (izomorfné) podstromy, mô¾eme ich zlúèi» do jedného.
+%http://www.umat.feec.vutbr.cz/~kovar/webs/personal/IDA.pdf strana 128, definice 4.3.4
+\paragraph{Izomorfizmus} dvoch grafov $G_1(V_1,H_1)$ a $G_2(V_2,H_2)$ je definovaný ako vzájomne bijektívne zobrazenie
+$f:V_1\rightarrow V_2$ a $g:H_1\rightarrow H_2$ také, ¾e µubovoµnej hrane $h\in H_1$ sú priradené vrcholy 
+$x,y\in V_1 \Leftrightarrow$ hrane $g(h)\in H_2$ sú priradené vrcholy $f(x),f(x)\in V_2$.\\
+Strom s odstránenými izomorfnými podstromamy je na obrázku \ref{picRBDD2}.
+\begin{figure}[ht!]
+  \centering
+  \includegraphics[width=90mm]{pic/bdd3.jpg}
+  \caption{BDD s odstránenými izomorfnými podstromami}
+  \label{picRBDD2}
+\end{figure} 
+\par
+Ïal¹iou redukciou je vynechávanie uzlov, kde $low(n) = high(n),pre\ n\in N$. V podstate ide o to, ¾e ak sa
+vysoký aj nízky následník odkazujú na podstromy, logická funkcia v tomto bode nezávisí od danej premennéj,
+preto sa mô¾e tento uzol vynecha». Výsledný strom je na obrázku \ref{picRBDD3}.
+\begin{figure}[ht!]
+  \centering
+  \includegraphics[width=50mm]{pic/bdd4.jpg}
+  \caption{Výsledné minimalizované BDD}
+  \label{picRBDD3}
+\end{figure}
+\paragraph{RBDD} je klasické BDD, pre ktoré platia nasledujúce pravidlá:
+\begin{enumerate}
+\item $\neg\exists n\in N.low(n)=high(n)$
+\item $\neg\exists x_1,x_2\in N \cup T.root(G_1)=x_1\wedge root(G_2)=x_2 \wedge G_1 \Longleftrightarrow G_2$
+\end{enumerate}
+% http://en.wikipedia.org/wiki/Binary_decision_diagram
+\subsection{Redukované usporiadané BDD} 
+Poradia vyhodnocovania premenných, ktoré ovplyvòujú uzly, majú veµký vplyv na poèet generovaných uzlov. 
+Pre ilustráciu si to predveïme na funkcií
+\begin{equation}
+y(x_1,...,x_8) = (x_1 \wedge x_2)\vee(x_3 \wedge x_4)\vee(x_5 \wedge x_6)\vee(x_7 \wedge x_8)
+\end{equation}
+RBDD odpovedajúce danej funkcií je na obrázku \ref{picROBDD}.
+\begin{figure}[ht!]
+  \centering
+  \includegraphics[width=150mm]{pic/bdd5.jpg}
+  \caption{Rozdiel medzi dobrým a zlým usporiadaním}
+  \label{picROBDD}
+\end{figure}
+\par
+Obe BDD sú minimalizované a popisujú rovnakú logickú funckiu. Z pravého obrázku v¹ak vidíme, ¾e dobrým
+usporiadaním výrazne zní¾ime poèet generovaných uzlov. Na zistenia dobrého usporiadania v¹ak neexistuje
+doposiaµ ¾iadný algoritmus. Existujú iba rôzne heuristiky. Tie nám v¹ak mô¾u pomôc», teda dostaneme
+výsledný strom s men¹ím poètom uzlom, ale aj u¹kodi». Tu je zoznam niektorých pou¾ívaných algoritmov:
+%BDD-dip
+\paragraph{Náhodný algoritmus}
+\paragraph{Sifting algoritmus}
+\paragraph{Symmetric sifting algoritmus}
+\paragraph{Group sifting algoritmus}
+\paragraph{Window permutation algoritmus}
+\paragraph{Algoritmus vyu¾ívajúci simulované ochladzovanie}
+\paragraph{Algoritmus vyu¾ívajúci genetické algoritmy}
+\section{Multiterminálne BDD}
+Multiterminálne BDD sú vo svojej podstate obyèajné ROBDD, ktoré majú väè¹í, obecne neobmedzený
+poèet terminálnych uzlov. Ako príklad si mô¾eme uvies» kombinaèný systém\footnote{Stav závisí iba 
+na kombinácii vstupu}, ktorý sa mô¾e nachádza» v stavoch $S_{\mathit{off}}$, $S_{set}$ a $S_{count}$.
+Vstupné premenné sú $X_{on}$ a $X_{count}$. Tabuµka systému je
+\begin{center}
+\begin{tabular}{|c|c||c|}
+\hline
+$X_{on}$ & $X_{count}$ & $S(X_{on}, X_{count})$ \\ \hline
+0 & 0 & $S_{\mathit{off}}$ \\ \hline
+0 & 1 & $S_{\mathit{off}}$ \\ \hline
+1 & 0 & $S_{set}$ \\ \hline
+1 & 1 & $S_{count}$ \\ \hline
+\end{tabular}
+\end{center}
+\par
+Podµa tabuµky jednoducho zostrojíme a zminimalizujeme BDD, ktoré v¹ak nemá iba 2 terminálne hodnoty ale 3.
+\begin{figure}[ht!]
+  \centering
+  \includegraphics[width=100mm]{pic/bdd6.jpg}
+  \caption{Príklad MTBDD}
+  \label{picMTBDD}
+\end{figure}
+\section{BDD s potlaèenou nulou}
+  
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Porovnání dostupných programových balíkù pro manipulaci
+% s binárními rozhodovacími diagramy, Martin Felcman, BP, 2008
+% felcmm1_2008bach.pdf
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Dostupné balíky}
+V tejto kapitole si popí¹eme niektoré kni¾nice pracujúce s BDD. Bude
+popísaná ¹truktúra uzlu a spôsob práce s diagramami.
+\section{CUDD}
+Balíèek vyvíjaný na univerzite v Colorádu. U¾ od roku 1996 stálym vývojom 
+dosiahol vynikajúce pamä»ové a výkonnostné výsledky. Podporuje prácu s BDD, 
+ADD a ZDD. V kni¾nici je taktie¾ implementovaná sada algoritmov na zlep¹enie
+usporiadania premenných.
+\par
+Balíèek sa mô¾e pou¾íva» 3 spôsobmi:
+\begin{enumerate}
+\item {Black box} - umo¾òuje pou¾íva» iba exportované funkcie popísané v nápovede.
+\item {Clean box} - umo¾nuje písanie zlo¾itej¹ích projektov, kde je vzhµadom k efektivite
+nutné prida» do balíka vlastné funkcie.
+\item {Interface} - OO jazyky umo¾nujú programátorom nestara» sa o správu pamäte.
+\end{enumerate}
+
+
+\subsection{©truktúra uzlu}
+\begin{lstlisting}
+struct DdNode{
+  DdHalfWord index;
+  DdHalfWord ref;
+  DdNode *next;
+  union{
+    CUDD_VALUE_TYPE value;
+    DdChildren kids;
+  } type;
+};
+\end{lstlisting}
+©truktúra reprezentuje terminálne aj neterminálne uzly. V premennej \texttt{index}
+je ulo¾ený názov premennej, podµa ktorej je pomenovaný uzol. Odrá¾a poradie vzniku
+uzlov. V premennej \texttt{ref} je poèítadlo referencií na uzol. Premenná \texttt{next}
+ukazuje na daµ¹í uzol v unique table. Ak ide o terminálny uzol, obsahuje premennú 
+\texttt{value}, ktorá znaèí hodnotu uzlu, ináè obsahuje ¹truktúru \texttt{kids}, kde sú
+ulo¾ené ukazatele na vysokého a nízkeho následníka daného uzlu.
+\subsection{Manager}
+V¹etky pou¾ité uzly sú ulo¾ené v ¹pecialnej hashovaciej tabuµke (unique table). BDD a ADD
+zdieµajú rovnakú tabuµku, ZDD má svoju vlastnú. Manager sa pred pou¾itím inicializuje
+funkciou \texttt{Cudd\_Init()} a po pou¾ití ru¹í funckiou \texttt{Cudd\_Quit()}.
+\subsection{Zhrnutie}
+CUDD je univerzálny balíèek pre prácu s BDD. Má kvalitne spracovanú dokumentáciu
+vèetne u¾ivateµského a programátorského manuálu. Výhodou je disponovanie ¹irokou
+¹kálou funkcií pre radenie poradia premenných. 
+
+\section{BuDDy}
+Táto kni¾nica bola vytvorená ako súèas» dizertaènej práce. Spoèiatku bola urèená len
+na demo¹tráciu princípov BDD. Vo svojej poslednej verzií je u¾ v¹ak plnohodnotným balíkom
+so v¹etkými ¹tandartnými operáciami, radením a dokumentáciou.
+\subsection{©truktúra uzlu}
+\begin{lstlisting}
+typedef struct s_BddNode{
+  unsigned int refcou : 10;
+  unsigned int level : 22;
+  int low;
+  int high;
+  int hash;
+  int next;
+} BddNode;
+\end{lstlisting}
+Premenná \texttt{refcou} obsahuje poèet referencií vedúcich na uzol. Premenná 
+\texttt{level} ukazuje pozíciu premennéj pri súèastnom ulo¾ení. Premenné \texttt{high}
+a \texttt{low} reprezentujú hrany, \texttt{next} je ukazateµ na nasledujúci uzol.
+Premenná \texttt{hash} je ukazateµ na koreò stromu.
+\par
+Je treba si uvedomi», ¾e knihovòa BuDDy nepracuje s managerom, ale s poµom,
+preto sú prvky ¹truktúry iba indexy do poµa. Existuje tu v¹ak aj hash tabuµka. 
+Tá je tu v¹ak za úèelom zvý¹enia efektívnosti pri prístupe k uzlom.
+
+\subsection{Zhrnutie}
+BuDDy je kompletný balík na prácu s BDD. Podporuje usporiadavanie premenných.
+Podporuje taktie¾ prácu s booleovskými vektormi. BuDDy má veµmi kvalitne spracované
+C\verb!++! rozhranie, ktoré zefektívòuje prácu s týmto balíkom.
+\section{VATA}
+\section{CacBDD}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Návrh implementácie}
+\section{Dátové ¹truktúry}
+\subsection{BDD node}
+\subsection{BDD manager}
+\subsection{Garbage collector}
+\subsection{Bit array}
+\subsection{Cache}
+\section{Previazanie BDD manager a BDD node}
+\section{Cachovanie}
+\section{Problémy pri implementácií}
+  
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Testy}
+\section{Memory leaks}
+\section{Rýchlos» vyhµadania uzlu}
+\section{Rýchlos» procedúry {\it Apply() } }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
+\chapter{Porovnanie s kni¾nicami CUDD a VATA}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Závìr}
+
