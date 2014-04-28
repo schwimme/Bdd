@@ -35,7 +35,7 @@ typedef struct Labels{
  * labels initialization, sets lab to NULL and count to 0
  * 1. param -> labels for initialization
  */
-void labelsInit(tLabels *);
+tError labelsInit(tLabels **);
 
 /**
  * free all labels in lab

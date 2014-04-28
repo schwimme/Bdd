@@ -46,11 +46,12 @@
 
 
 
-typedef struct BddRoot{
+typedef struct Manager{
   tGarbage *   nodes;     // all avaible nodes for current bdd
+  tBddNode *   free;      // all free nodes
   tLabels  *   variables; // all labels for variables
   tLabels  *   terminals; // all labels for terminal values
-}tBddRoot;
+}tManager;
 
 /**
  * allocate nodes and set root, variables and terminals to null
@@ -58,15 +59,15 @@ typedef struct BddRoot{
  * 2. param -> number of allocated nodes
  * return   -> E_OK iff success
  */
-tError bddInit(tBddRoot *, unsigned int);
+tError bddInit(tManager *, unsigned int);
 
 /**
  * free all resources of bdd
  * 1. param -> bdd to release
  */
-void bddDestroy(tBddRoot *);
+void bddDestroy(tManager *);
 
-tError bddCreateTerminal(tBddRoot *,char *,tBddNode **);
-tError bddCreateNode(tBddRoot *, char *,tBddNode *,tBddNode *, tBddNode **);
+tError bddCreateTerminal(tManager *,char *,tBddNode **);
+tError bddCreateNode(tManager *, char *,tBddNode *,tBddNode *, tBddNode **);
 
 #endif // _BDD_H_

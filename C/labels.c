@@ -7,9 +7,12 @@
 #include"labels.h"
 #include<stdio.h>
 
-void labelsInit(tLabels *l){
-  l->lab = NULL;
-  l->count = 0;
+tError labelsInit(tLabels **l){
+  if(!(*l = malloc(sizeof(tLabels)))) return E_INIT_MALLOC;
+  (*l)->lab = NULL;
+  (*l)->count = 0;
+  
+  return E_OK;
 }
 
 tError labelsInsert(tLabels *l, char * label, unsigned int * position) {
@@ -32,4 +35,5 @@ tError labelsInsert(tLabels *l, char * label, unsigned int * position) {
 
 void labelsDestroy(tLabels *l){
   free(l->lab);
+  free(l);
 }

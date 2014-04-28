@@ -46,7 +46,7 @@ typedef struct BddNode{
 
 typedef struct Garbage{
   tBddNode * nodes;   // array of all avaible nodes
-  tBddNode * free;    // list of free nodes
+  struct Garbage* next;    // list of free nodes
 }tGarbage;
 
 /**
@@ -55,26 +55,13 @@ typedef struct Garbage{
  * 2. param -> number of allocated items
  * returns  -> E_OK iff success
  */
-tError nodeInit(tGarbage *,unsigned int);
+tError nodeInit(tGarbage **,unsigned int);
 
 /**
  * free resources of garbage
  * 1. param -> garbage for destroying
  */
 void nodeDestroy(tGarbage *);
-
-/**
- * get pointer to first free node
- * 1. param -> garbage where you search
- * returns  -> NULL if there are no free nodes else pointer to first free node
- */
-tBddNode * nodeGetNode(tGarbage *);
-/**
- * insert node to free list
- * 1. param -> gargabe where you working
- * 2. param -> free node
- */
-void nodeFreeNode(tGarbage *, tBddNode *);
 
 /**
  * Inc/Dec reference counter in node

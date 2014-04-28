@@ -12,7 +12,7 @@
 
 
 int main(){
-  tBddRoot manager;
+  tManager manager;
   tBddNode *false,*true,*x;
   tError e;
   e = bddInit(&manager,BDD_SMALL);
@@ -26,7 +26,7 @@ int main(){
   
   e = bddCreateNode(&manager,"x",true,false,&x);
   if(e) bddThrowError(e);
-  
+
   bddDestroy(&manager);
   return 0;
 }
