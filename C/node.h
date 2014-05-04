@@ -4,31 +4,6 @@
 /**     A BDD Library    **/
 /**************************/
 
-/*
-  Modul:      node
-  
-  Interface:
-    struct BddNode (tBddNode)
-      struct BddNode * high
-      struct BddNode * low
-      unsigned int     var
-      unsigned int     ref
-      struct BddNode * nextFree
-    
-    struct Garbage (tGarbage)
-      tBddNode * nodes
-      tBddNode * free    
-
-
-    tError     nodeInit    (tGarbage *,unsigned int);
-    void       nodeDestroy (tGarbage *);
-    tBddNode * nodeGetNode (tGarbage *);
-    void       nodeFreeNode(tGarbage *, tBddNode *);
-    void       nodeIncRef  (tBddNode *);
-    void       nodeDecRef  (tBddNode *);
-
-
-*/
 
 #ifndef  _NODE_H_
 #define _NODE_H_
@@ -49,25 +24,8 @@ typedef struct Garbage{
   struct Garbage* next;    // list of free nodes
 }tGarbage;
 
-/**
- * init array of nodes and list of free nodes
- * 1. param -> garbage that will be initialized
- * 2. param -> number of allocated items
- * returns  -> E_OK iff success
- */
+
 tError nodeInit(tGarbage **,unsigned int);
-
-/**
- * free resources of garbage
- * 1. param -> garbage for destroying
- */
 void nodeDestroy(tGarbage *);
-
-/**
- * Inc/Dec reference counter in node
- * 1. param -> node
- */
-void nodeIncRef(tBddNode *);
-void nodeDecRef(tBddNode *);
 
 #endif // _NODE_H_

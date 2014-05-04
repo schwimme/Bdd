@@ -41,11 +41,4 @@ void nodeDestroy(tGarbage * gar) {
 
 }
 
-void nodeIncRef(tBddNode * node){
-  node->ref++;
-}
-
-void nodeDecRef(tBddNode * node){
-  node->ref--;
-}
 

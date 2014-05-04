@@ -5,7 +5,6 @@
 /**************************/
 
 #include"labels.h"
-#include<stdio.h>
 
 tError labelsInit(tLabels **l){
   if(!(*l = malloc(sizeof(tLabels)))) return E_INIT_MALLOC;

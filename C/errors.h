@@ -29,7 +29,8 @@ typedef enum Error {
   E_INIT_MALLOC,
   E_GAR_MALLOC,
   E_LAB_MALLOC,
-  E_FREE_NODES
+  E_FREE_NODES,
+  E_MALLOC_CACHE
 } tError;
 
 /**
