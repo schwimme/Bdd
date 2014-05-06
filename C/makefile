@@ -2,12 +2,14 @@ CC=gcc
 FLAGS=-std=c99 -Wall -Wextra -pedantic
 OUTPUT=main
 
-all: labels node errors bdd
-	$(CC) $(FLAGS) labels.o node.o errors.o bdd.o main.c -o $(OUTPUT)
+all: labels node errors manager bdd
+	$(CC) $(FLAGS) labels.o node.o errors.o manager.o bdd.o main.c -o $(OUTPUT)
 
 
 bdd:bdd.c bdd.h
 	$(CC) $(FLAGS) -c bdd.c
+manager:manager.c manager.h
+	$(CC) $(FLAGS) -c manager.c
 
 
 errors:errors.c errors.h

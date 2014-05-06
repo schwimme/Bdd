@@ -8,18 +8,8 @@
   Modul:    head - test file
 */
 #include"bdd.h"
-#include<stdio.h>
 
 
-void printTree(tManager * bdd, tBddNode * x){
-
-  printNodeValue(bdd, x);  
-  
-  if(isTerminal(x)) return;
-  
-  printTree(bdd,x->low);
-  printTree(bdd,x->high);
-}
 
 int main(){
   tError e;
@@ -30,22 +20,28 @@ int main(){
   e = bddInit(&manager,BDD_SMALL);
   if(e) bddThrowError(e);
   
-  e = bddCreateNode(&manager,"x",&x);
+  e = bddCreateNode(&manager,"x1",&x);
   if(e) bddThrowError(e);
   
-  e = bddCreateNode(&manager,"x",&y);
+  
+  e = bddCreateNode(&manager,"x2",&y);
   if(e) bddThrowError(e);
   
-  e = bddCreateNode(&manager,"x",&z);
+  
+  z = apply(&manager,x,y,&bddOr);
   if(e) bddThrowError(e);
-
-  printf("%d\n",x->ref);
-  printf("%p\n%p\n",(void*)x,(void*)y);
-
-  //printTree(&manager,x);
-  //printTree(&manager,y);
+  
+  
+  e = bddCreateNode(&manager,"x3",&y);
+  if(e) bddThrowError(e);
+  
+  
+  x = apply(&manager,z,y,&bddXor);
+  
+  printTree(&manager,x);
 
   
+
   bddDestroy(&manager);
   return 0;
 }

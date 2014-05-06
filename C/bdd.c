@@ -4,141 +4,70 @@
 /**     A BDD Library    **/
 /**************************/
 
-
 #include"bdd.h"
 
-tBddNode * bddTrue;
-tBddNode * bddFalse;
+tBddNode * _apply(tManager *bdd, tBddNode *x, tBddNode *y,tBddNode*(*func)()) {
+  tBddNode * result;
+  tBddNode *xh,*xl,*yh,*yl;
+  if(isTerminal(x) && isTerminal(y)){ // both are terminals, run func
+    result = func(x,y);
+    return result;
 
-tError bddInit(tManager * bdd,unsigned int size) {
-
-  // initialization of allocated structs
-  if(nodeInit(&(bdd->nodes),size)) return E_GAR_MALLOC;
-  if(labelsInit(&(bdd->variables))) return E_INIT_MALLOC;
-  if(labelsInit(&(bdd->terminals))) return E_INIT_MALLOC;
-  
-  bdd->free = &(bdd->nodes->nodes[0]);
-  
-  if(bddCreateTerminal(bdd,"true",&bddTrue)) return E_FREE_NODES;
-  if(bddCreateTerminal(bdd,"false",&bddFalse)) return E_FREE_NODES;
-  
-  bdd->cache = NULL;
-  return E_OK;
-}
-
-void bddDestroy(tManager * bdd){
-  // free resources
-  nodeDestroy(bdd->nodes);
-  labelsDestroy(bdd->variables);
-  labelsDestroy(bdd->terminals);
-  tCache * tmp;
-  
-  for(tCache * iterator = bdd->cache;iterator != NULL; iterator=tmp){
-    tmp = iterator->next;
-    free(iterator);
-  }
-}
-
-
-tError cacheCheck(tManager * bdd,tBddNode ** node){
-  for(tCache * iterator = bdd->cache;iterator != NULL; iterator=iterator->next){
-    if(iterator->record->var == (*node)->var &&
-       iterator->record->high == (*node)->high &&
-       iterator->record->low == (*node)->low){
-         nodeDecRef(bdd,*node);
-         (*node) = iterator->record;
-         nodeIncRef(*node);
-         return E_OK;
-       }
+  } else if(isTerminal(x)) { // only x is terminal
+    bddCreateNode(bdd,bdd->variables->lab[y->var],&result);
+    xh = x; xl = x;
+    yh = y->high; yl = y->low;
+  } else if(isTerminal(y)) { // only y is terminal
+    bddCreateNode(bdd,bdd->variables->lab[x->var],&result);
+    xh = x->high; xl = x->low;
+    yh = y; yl = y;
+  } else { // anyone is not terminals
+    if(x->var == y->var){ // labels are equal
+      bddCreateNode(bdd,bdd->variables->lab[x->var],&result);
+      xh = x->high; xl = x->low;
+      yh = y->high; yl = y->low;
+    } else if(x->var < y->var) { // x is over y
+      bddCreateNode(bdd,bdd->variables->lab[x->var],&result);
+      xh = x->high; xl = x->low;
+      yh = y; yl = y;
+    } else { // y is over x
+      bddCreateNode(bdd,bdd->variables->lab[y->var],&result);
+      xh = x; xl = x;
+      yh = y->high; yl = y->low;
+    }
   }
   
- 
-  tCache * tmp = malloc(sizeof(tCache));
-  if(!tmp) return E_MALLOC_CACHE;
-  
-  tmp->record = *node;
-  
-  tmp->next = bdd->cache;
-  bdd->cache = tmp;
-  
-  return E_OK; 
+  result->high = _apply(bdd,xh,yh,func);
+  result->low = _apply(bdd,xl,yl,func);
+  return result;
+}
+
+tBddNode * apply(tManager *bdd, tBddNode *x, tBddNode *y, tBddNode*(*func)()) {
+  tBddNode * result = _apply(bdd,x,y,func);
+  nodeDecRef(bdd,x);
+  nodeDecRef(bdd,y);
+  return result;
 }
 
 
-tBddNode * bddGetNode(tManager * bdd) {
-  tBddNode * res = bdd->free;
-  bdd->free = bdd->free->nextFree;
-  
-  // ToDo if you're out of free nodes realloc
-  
-  return res;
+tBddNode * bddOr(tBddNode *x,tBddNode*y){
+  if(x == bddTrue || y == bddTrue) return bddTrue;
+  return bddFalse;
+}
+tBddNode * bddNor(tBddNode *x,tBddNode*y){
+  if(x == bddTrue || y == bddTrue) return bddFalse;
+  return bddTrue;
+}
+tBddNode * bddAnd(tBddNode *x,tBddNode*y){
+  if(x == bddTrue && y == bddTrue) return bddTrue;
+  return bddFalse;
+}
+tBddNode * bddNand(tBddNode *x,tBddNode*y){
+  if(x == bddTrue && y == bddTrue) return bddFalse;
+  return bddTrue;
 }
 
-tError bddCreateTerminal(tManager * bdd, char * label, tBddNode ** result){
-  unsigned int labelIndex; 
-  tError e; // possible error
-  
-  *result = bddGetNode(bdd); // create node
-  if(!(*result)) return E_FREE_NODES;
-  
-  e = labelsInsert(bdd->terminals,label,&labelIndex);
-  if(e) return e;
-  
-  (*result)->var = labelIndex;
-  
-  (*result)->nextFree = NULL;
-  (*result)->high     = NULL;
-  (*result)->low      = NULL;
-  return E_OK;
+tBddNode * bddXor(tBddNode *x,tBddNode*y){
+  if(x == y) return bddFalse;
+  return bddTrue;
 }
-
-tError bddCreateNode(tManager *bdd, char *label, tBddNode **result) {
-  unsigned int labelIndex; 
-  tError e; // possible error
-  
-  *result = bddGetNode(bdd); // create node
-  if(!(*result)) return E_FREE_NODES;
-  
-  e = labelsInsert(bdd->variables,label,&labelIndex);
-  if(e) return e;
-  
-  (*result)->var = labelIndex;
-  (*result)->high     = bddTrue;
-  (*result)->low      = bddFalse;
-  (*result)->ref = 1;
-
-  e = cacheCheck(bdd,result);
-  if(e) return(e);
-  
-  (*result)->nextFree = NULL;
-  
-  return E_OK;
-}
-
-void printNodeValue(tManager *bdd,tBddNode *x) {
-  if(isTerminal(x)) 
-    printf("%s\n",bdd->terminals->lab[x->var]);
-  else 
-    printf("%s\n",bdd->variables->lab[x->var]);
-}
-
-
-void nodeIncRef(tBddNode * node){
-  node->ref++;
-}
-
-void nodeFree(tManager *bdd, tBddNode * node) {
-  tBddNode * tmp = bdd->free;
-  bdd->free = node;
-  node->nextFree = tmp;
-}
-
-void nodeDecRef(tManager *bdd, tBddNode * node){
-  node->ref--;
-  if(node->ref == 0) {
-    if(!isTerminal(node->high)) nodeDecRef(bdd,node->high);
-    if(!isTerminal(node->low))  nodeDecRef(bdd,node->low);
-    nodeFree(bdd,node);
-  }
-}
-
