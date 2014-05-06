@@ -39,17 +39,34 @@ tBddNode * _apply(tManager *bdd, tBddNode *x, tBddNode *y,tBddNode*(*func)()) {
   
   result->high = _apply(bdd,xh,yh,func);
   result->low = _apply(bdd,xl,yl,func);
+  if(result->high == result->low) return result->low;
   return result;
 }
+
 
 tBddNode * apply(tManager *bdd, tBddNode *x, tBddNode *y, tBddNode*(*func)()) {
-  tBddNode * result = _apply(bdd,x,y,func);
-  nodeDecRef(bdd,x);
-  nodeDecRef(bdd,y);
+  tBddNode * result;
+  if(func == bddNeg) {
+    y = x;
+    result = _apply(bdd,x,y,bddNand);
+    nodeDecRef(bdd,x);
+  }else { 
+    result = _apply(bdd,x,y,func);
+    nodeDecRef(bdd,x);
+    nodeDecRef(bdd,y);
+  }
   return result;
 }
 
 
+
+
+
+////////////////////////////////////////////////////
+tBddNode * bddNeg(tBddNode *x,tBddNode*y) {
+  if(x==y) return NULL; // stupid code because of [-Wunused-parameter]
+  return NULL;
+}
 tBddNode * bddOr(tBddNode *x,tBddNode*y){
   if(x == bddTrue || y == bddTrue) return bddTrue;
   return bddFalse;

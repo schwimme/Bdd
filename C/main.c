@@ -15,30 +15,19 @@ int main(){
   tError e;
   
   tManager manager;
-  tBddNode *x,*y,*z;
+  tBddNode *a;
   
   e = bddInit(&manager,BDD_SMALL);
   if(e) bddThrowError(e);
   
-  e = bddCreateNode(&manager,"x1",&x);
+  
+  /* Create a */
+  e = bddCreateNode(&manager,"a",&a);
   if(e) bddThrowError(e);
   
+  a = apply(&manager,a,NULL,&bddNeg);
   
-  e = bddCreateNode(&manager,"x2",&y);
-  if(e) bddThrowError(e);
-  
-  
-  z = apply(&manager,x,y,&bddOr);
-  if(e) bddThrowError(e);
-  
-  
-  e = bddCreateNode(&manager,"x3",&y);
-  if(e) bddThrowError(e);
-  
-  
-  x = apply(&manager,z,y,&bddXor);
-  
-  printTree(&manager,x);
+  printTree(&manager,a);
 
   
 
