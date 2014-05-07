@@ -15,21 +15,22 @@ int main(){
   tError e;
   
   tManager manager;
-  tBddNode *a;
+  tBddNode *a,*b;
   
   e = bddInit(&manager,BDD_SMALL);
   if(e) bddThrowError(e);
   
   
-  /* Create a */
   e = bddCreateNode(&manager,"a",&a);
   if(e) bddThrowError(e);
+  a = apply(&manager,a,NULL,bddNeg);
   
-  a = apply(&manager,a,NULL,&bddNeg);
+  e = bddCreateNode(&manager,"b",&b);
+  if(e) bddThrowError(e);
+  b = apply(&manager,b,NULL,bddNeg);
   
+  a = apply(&manager,a,b,bddAnd);
   printTree(&manager,a);
-
-  
 
   bddDestroy(&manager);
   return 0;

@@ -45,6 +45,59 @@ void bddDestroy(tManager * bdd){
 }
 
 
+tError cacheInsert(tManager*bdd,tBddNode*node) {
+  if(cacheCheck(bdd,node)) return E_OK;
+  
+  tCache * new = malloc(sizeof(tCache)); // place for new record
+  if(!new) return E_MALLOC_CACHE;
+  
+  // insert data
+  new->high = node->high;
+  new->low = node->low;
+  new->var = node->var;
+  new->record = node;
+  
+
+  new->next = bdd->cache;
+  bdd->cache = new;
+  
+  return E_OK;
+}
+
+void cacheDelete(tManager*bdd,tBddNode*node) {
+  if(!(bdd->cache)) return;
+  tCache * first = bdd->cache->next;
+  tCache * second = bdd->cache; // carriage
+  
+  if(node == second->record){ // first record
+    bdd->cache = second->next;
+    free(second);
+    return;
+  } else {
+    while(first != NULL) { // it isn't first record
+      if(first->record == node){ // check current
+        second->next = first->next;
+        free(first);
+        return;
+      }
+      first = first->next; // succ current and carriage
+      second = second->next;
+    }
+  }
+  return;
+}
+
+tBddNode * cacheCheck(tManager*bdd,tBddNode * node){
+  for(tCache * iterator = bdd->cache;iterator!=NULL;iterator=iterator->next){
+    if(iterator->var == node->var &&
+       iterator->high == node->high &&
+       iterator->low == node->low){
+         nodeIncRef(iterator->record);
+         return iterator->record;
+    }
+  }
+  return NULL;
+}
 
 
 tBddNode * bddGetNode(tManager * bdd) {
@@ -88,7 +141,7 @@ tError bddCreateTerminal(tManager * bdd, char * label, tBddNode ** result){
   return E_OK;
 }
 
-tError bddCreateNode(tManager *bdd, char *label, tBddNode **result) {
+tError bddNewNode(tManager *bdd, char *label, tBddNode **result) {
   unsigned int labelIndex; 
   tError e; // possible error
   
@@ -103,8 +156,22 @@ tError bddCreateNode(tManager *bdd, char *label, tBddNode **result) {
   (*result)->high = bddTrue;
   (*result)->low = bddFalse;
   (*result)->ref = 1;
-
   (*result)->nextFree = NULL;
+  
+  return E_OK;
+}
+
+tError bddCreateNode(tManager *bdd, char *label, tBddNode **result) {
+  tError e = bddNewNode(bdd,label,result);
+  if(e) return e;
+  
+  tBddNode * cached = cacheCheck(bdd,*result);
+  if(cached){
+    nodeDecRef(bdd,*result);
+    *result = cached;
+    return E_OK;
+  }
+  cacheInsert(bdd,*result);
   
   return E_OK;
 }
@@ -133,10 +200,12 @@ void printTree(tManager * bdd, tBddNode * x){
   printTree(bdd,x->low);
 }
 void printNodeInfo(tManager *bdd, tBddNode *node){
-  if(!(node->nextFree)){
-  
+  if(isTerminal(node)){
     printf("Address:\t%p\n",(void*)node);
-    printf("Name:\t"); printNodeValue(bdd,node);
+    printf("Terminal:\t"); printNodeValue(bdd,node);
+  } else if(!(node->nextFree)){
+    printf("Address:\t%p\n",(void*)node);
+    printf("Node:\t"); printNodeValue(bdd,node);
     printf("Order:\t%d\n",node->var);
     printf("Ref:\t%d\n",node->ref);
     printf("High:\t");printNodeValue(bdd,node->high);
@@ -165,6 +234,7 @@ void nodeDecRef(tManager *bdd, tBddNode * node){
     if(!isTerminal(node->high)) nodeDecRef(bdd,node->high);
     if(!isTerminal(node->low))  nodeDecRef(bdd,node->low);
     nodeFree(bdd,node);
+    cacheDelete(bdd,node);
   }
 }
 

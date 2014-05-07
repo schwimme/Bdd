@@ -26,7 +26,8 @@
 
 
 typedef struct Cache{
-  tBddNode * record;
+  unsigned int var;
+  tBddNode *high, *low, *record;
   struct Cache * next;
 } tCache;
 
@@ -46,11 +47,16 @@ void nodeIncRef(tBddNode *);
 void nodeDecRef(tManager *,tBddNode *);
 
 
+tBddNode *cacheCheck(tManager *,tBddNode *);
+void cacheDelete(tManager *,tBddNode *);
+tError cacheInsert(tManager *,tBddNode *);
+
 
 tError bddInit(tManager *, unsigned int);
 void bddDestroy(tManager *);
 tError bddCreateTerminal(tManager *,char *,tBddNode **);
 tError bddCreateNode(tManager *, char *, tBddNode **);
+tError bddNewNode(tManager *, char *, tBddNode **);
 void printNodeValue(tManager *,tBddNode *);
 void printTree(tManager *, tBddNode *);
 void printNodeInfo(tManager *, tBddNode *);
