@@ -29,7 +29,8 @@ acyklického koreòového grafu, matematickými zápismi, alebo logickými funkciami.
 %
 \section{Výroková logika}
 Výroková logika skúma spôsoby tvorby zlo¾ených výrokov z jednoduchých a pravdivos» (nepravdivos»)
-zlo¾eného výroku v závislosti od pravdivosti jednoduchých z ktorých je zlo¾ený.
+zlo¾eného výroku v závislosti od pravdivosti jednoduchých z ktorých je zlo¾ený. Celá kapitola
+o výrokovej logike je prevzaná z literatúry\cite{Slapal}.
 \par
 Buï $P$ neprázdna mno¾ina prvotných formúl, ktoré hrajú úlohu jednoduchých výrokov.
 Z jednoduchých výrokov získaváme zlo¾ené výroky spájaním pomocou logických spojok.
@@ -77,7 +78,7 @@ $w(A\rightarrow B)$ & $w(A\equiv B)$ \\
 Logické funkcie sa mô¾u reprezentova» rôznymi spôsobmi. Najèastej¹ie vyjadrenie je v podobe matematického
 vzorca za pomoci vy¹¹ie spomínaných operátorov a funckií. Ma» v¹ak v poèítaèi funkciu ulo¾enú ako textový
 re»azec veµmi komplikuje prácu s òou, preto sa vyvynuli rôzne dal¹ie reprezentácie. Operátory logických 
-funckií sa väè¹inou prevádzajú po rade z $\vee, \wedge, \neg$ na $+, *, !$
+funckií sa väè¹inou prevádzajú po rade z $\vee, \wedge, \neg$ na $+, *, !$.
 \paragraph{Pravdivostná tabuµka}
 Najprehµadnej¹í a najµah¹ie nauèiteµný typ uchovávania logickej funkcie, bohu¾ial obsahuje veµké mno¾stvo 
 redundancie a mô¾e ma» veµké pamä»ové nároky ($2^n$, kde $n$ je poèet premenných funkcie).
@@ -86,9 +87,9 @@ redundancie a mô¾e ma» veµké pamä»ové nároky ($2^n$, kde $n$ je poèet premenných
 na minimalizáciu.
 \paragraph{Logický obvod}
 Nie moc prehµadný ani µahko nauèiteµný formát, ale vynikajúcí na demo¹tráciu pokroèilých systémov zlo¾ených
-z logických funkcií
+z logických funkcií.
 \paragraph{BDD}
-Formát v podobe acyklického koreòového grafu, ktorému sa budeme ïalej venova» v kapitole \ref{TypyBDD}
+Formát v podobe acyklického koreòového grafu, ktorému sa budeme ïalej venova» v kapitole \ref{TypyBDD}.
 \par
 Existuje veµké mno¾stvo rôznych popisov logickej funkcie, z ktorých ka¾dý má svoje výhody aj nevýhody.
 V prípade potreby nie je problém vytvori» vlasnú konvenciu pre zápis funkcie. Vo väè¹ine prípadov by
@@ -125,14 +126,22 @@ Názornej¹ie vyjadrenie je pomocou tabuµky pre dve vstupné premenné ($k$=2), dve 
 \end{center} 
 
 \section{História}
-BDD vznikli z~dôvodu úspornej¹iej reprezentácie logických funckií. Táto reprezentácia je
-navrhnutá na základe Shanonovho expazného teorému. Táto dátová ¹truktúra od vzniku 
-v~1959 pre¹la mnohými úpravami na zní¾enie èasovej a~pamä»ovej nároènosti.
+BDD vznikli z~dôvodu úspornej¹iej reprezentácie logických funckií. Reprezentácia je
+navrhnutá na základe Shanonovho expazného teorému\cite{Shannon}. Táto dátová ¹truktúra od vzniku 
+v~1959\cite{Lee} pre¹la mnohými úpravami na zní¾enie èasovej a~pamä»ovej nároènosti.
 \par
 Najvýznamnej¹ím milníkom v~oblasti redukcie pamä»ovej nároènosti bola ¹túdia R. E. 
-Bryanta z~Univerzity Carnegie Mellon. Táto ¹túdia sa týka najmä poradia premenných 
+Bryanta\cite{Bryant} z~Univerzity Carnegie Mellon. Táto ¹túdia sa týka najmä poradia premenných 
 a~zdieµania podgrafov. Toto sa dá poklada» za vznik ROBDD popísaných v~sekcií \ref{ROBDD}.
-\section{Matematický popis} %vojnarove slidy
+
+%
+% vojnarove slidy
+%
+%
+
+\section{Matematický popis}
+Prevzaté z predná¹ky \cite{Vojnar}.
+\par
 BDD je reprezentácia logickej funkcie $\{0,1\}^k\rightarrow\{0,1\},k\geq 0$. 
 Z pohµadu teorie grafov sa jedná o koreòový, orientovaný, spojitý acyklický graf.
 Formálna definícia BDD nad mno¾inou premenných $M$ je
@@ -152,8 +161,8 @@ a nízkeho následníka pre daný úzol $n\in N$ pre premennú $var(n)$ so vstupom $0$
 Vstupné hrany do uzlú $root$ by poru¹ili acyklicitu grafu.
 \item $val : T\rightarrow \{0,1\}$ je mapovacia funkcia hodnôt terminálnych uzlov
 \end{itemize}
-\section{Procedúra {\it Apply()}}
-Procedúra {\it Apply()} aplikuje booleovskú funkciu na BDD. Mô¾e by» unárna, alebo
+\section{Procedúra \emph{Apply()}} \label{apply}
+Procedúra \emph{Apply()} aplikuje booleovskú funkciu na BDD. Mô¾e by» unárna, alebo
 binárna, výnimoène ternárna. Procedúre sú predané v¹etky BDD s ktorými pracuje
 a odkaz na funkciu, ktorú má vykona». Poèet funkcií je odvodený v kapitole \ref{logfce}.
 Výsledkom procedúry je jedno BDD.
@@ -194,11 +203,11 @@ kde $k$ je poèet premenných.
 \subsection{Základné BDD}
 Grafické znázornenie na¹ej funkcie je na obrázku \ref{picBDD}.
 \begin{figure}[ht!]
-  \centering
-  \includegraphics[width=100mm]{pic/bdd1.jpg}
+  \includegraphics[bb=0 50 0 200]{fig/bdd1.eps}
   \caption{Základné BDD}
   \label{picBDD}
 \end{figure}
+
 \paragraph{Notácia}
 Pre orientáciu v grafe je pou¾itá nasledujúca notácia
 \begin{enumerate}
@@ -229,22 +238,20 @@ Pri pohµade na obrázok \ref{picBDD} vidíme redundanciu v terminálnych uzloch. Te
 do dvoch. Vzniká strom s redukovaným poètom terminálnych uzlov, ktorý je znázornený
 na obrázku \ref{picRBDD1}.
 \begin{figure}[ht!]
-  \centering
-  \includegraphics[width=100mm]{pic/bdd2.jpg}
+  \includegraphics[bb=0 0 0 200]{fig/bdd2.eps}
   \caption{BDD s redukovaným poètom terminálnych uzlov}
   \label{picRBDD1}
 \end{figure}
 \par
 Ïal¹iou redukciou je zluèovanie izomorfných podstromov. Keï sa v BDD nachádzajú dva rôzne uzly, ktoré majú
 rovnaké (izomorfné) podstromy, mô¾eme ich zlúèi» do jedného.
-%http://www.umat.feec.vutbr.cz/~kovar/webs/personal/IDA.pdf strana 128, definice 4.3.4
-\paragraph{Izomorfizmus} dvoch grafov $G_1(V_1,H_1)$ a $G_2(V_2,H_2)$ je definovaný ako vzájomne bijektívne zobrazenie
+
+\paragraph{Izomorfizmus}\cite{Kovar} dvoch grafov $G_1(V_1,H_1)$ a $G_2(V_2,H_2)$ je definovaný ako vzájomne bijektívne zobrazenie
 $f:V_1\rightarrow V_2$ a $g:H_1\rightarrow H_2$ také, ¾e µubovoµnej hrane $h\in H_1$ sú priradené vrcholy 
 $x,y\in V_1 \Leftrightarrow$ hrane $g(h)\in H_2$ sú priradené vrcholy $f(x),f(x)\in V_2$.\\
 Strom s odstránenými izomorfnými podstromamy je na obrázku \ref{picRBDD2}.
 \begin{figure}[ht!]
-  \centering
-  \includegraphics[width=90mm]{pic/bdd3.jpg}
+  \includegraphics[bb=0 40 0 250]{fig/bdd3.eps}
   \caption{BDD s odstránenými izomorfnými podstromami}
   \label{picRBDD2}
 \end{figure} 
@@ -253,8 +260,7 @@ Strom s odstránenými izomorfnými podstromamy je na obrázku \ref{picRBDD2}.
 vysoký aj nízky následník odkazujú na podstromy, logická funkcia v tomto bode nezávisí od danej premennéj,
 preto sa mô¾e tento uzol vynecha». Výsledný strom je na obrázku \ref{picRBDD3}.
 \begin{figure}[ht!]
-  \centering
-  \includegraphics[width=50mm]{pic/bdd4.jpg}
+  \includegraphics[bb=0 40 0 250]{fig/bdd4.eps}
   \caption{Výsledné minimalizované BDD}
   \label{picRBDD3}
 \end{figure}
@@ -263,7 +269,8 @@ preto sa mô¾e tento uzol vynecha». Výsledný strom je na obrázku \ref{picRBDD3}.
 \item $\neg\exists n\in N.low(n)=high(n)$
 \item $\neg\exists x_1,x_2\in N \cup T.root(G_1)=x_1\wedge root(G_2)=x_2 \wedge G_1 \Longleftrightarrow G_2$
 \end{enumerate}
-% http://en.wikipedia.org/wiki/Binary_decision_diagram
+
+
 \subsection{Redukované usporiadané BDD} 
 Poradia vyhodnocovania premenných, ktoré ovplyvòujú uzly, majú veµký vplyv na poèet generovaných uzlov. 
 Pre ilustráciu si to predveïme na funkcií
@@ -273,8 +280,8 @@ y(x_1,...,x_8) = (x_1 \wedge x_2)\vee(x_3 \wedge x_4)\vee(x_5 \wedge x_6)\vee(x_
 RBDD odpovedajúce danej funkcií je na obrázku \ref{picROBDD}.
 \begin{figure}[ht!]
   \centering
-  \includegraphics[width=150mm]{pic/bdd5.jpg}
-  \caption{Rozdiel medzi dobrým a zlým usporiadaním}
+  \includegraphics[width=150mm]{fig/bdd5.jpg}
+  \caption{Rozdiel medzi dobrým a zlým usporiadaním\cite{WikiOrder}}
   \label{picROBDD}
 \end{figure}
 \par
@@ -283,13 +290,28 @@ usporiadaním výrazne zní¾ime poèet generovaných uzlov. Na zistenia dobrého uspor
 doposiaµ ¾iadný algoritmus. Existujú iba rôzne heuristiky. Tie nám v¹ak mô¾u pomôc», teda dostaneme
 výsledný strom s men¹ím poètom uzlom, ale aj u¹kodi». Tu je zoznam niektorých pou¾ívaných algoritmov:
 %BDD-dip
-\paragraph{Náhodný algoritmus}
-\paragraph{Sifting algoritmus}
-\paragraph{Symmetric sifting algoritmus}
-\paragraph{Group sifting algoritmus}
-\paragraph{Window permutation algoritmus}
-\paragraph{Algoritmus vyu¾ívajúci simulované ochladzovanie}
-\paragraph{Algoritmus vyu¾ívajúci genetické algoritmy}
+\paragraph{Náhodný algoritmus}\cite{Rucky}
+Algoritmus sa pou¾íva v dvoch variantách a to varianta s pivotom a varianta bez pivota.\\
+Varianta bez pivota vyberá dve náhodné premenné v grafe a tie vymení postupným vymieòaním
+susedných uzlov. Výsledné usporiadanie premenných pre danú iteráciu je ulo¾enie s najmen¹ím
+poètom uzlov v priebehu itérácie. \\
+Varianta s pivotom pracuje na rovnakom princípe, ale pred samotným algoritmom sa vyberie
+pivot. To je premenná s najvy¹¹ím poètom uzlov. Dve náhodne zvolené premenné sú také, ¾e
+jedna sa nachádza nad a druhá pod pivotom.
+\paragraph{Sifting algoritmus} \cite{Rudell}
+Teória je spoèíta» najvýhodnej¹iu pozíciu v grafe pre jednu premennú s tým, ¾e ostatné premenné
+zachovajú svoje poradie. Premennú posúvame najskôr smerom k terminálnym uzlom, potom smerom
+ku koreòu. Po príchode do koreòu vieme, v ktorej pozícií mala premenná najmenej uzlov a posunieme
+ju tam. Posun sa vykonáva na základe prehadzovania susedných premenných.
+\par
+Iné pou¾ívané algoritmy sú napríklad
+\begin{itemize}
+  \item{Symmetric sifting algoritmus}
+  \item{Group sifting algoritmus}
+  \item{Window permutation algoritmus}
+  \item{Algoritmus vyu¾ívajúci simulované ochladzovanie}
+  \item{Algoritmus vyu¾ívajúci genetické algoritmy}
+\end{itemize}
 \section{Multiterminálne BDD}
 Multiterminálne BDD sú vo svojej podstate obyèajné ROBDD, ktoré majú väè¹í, obecne neobmedzený
 poèet terminálnych uzlov. Ako príklad si mô¾eme uvies» kombinaèný systém\footnote{Stav závisí iba 
@@ -306,14 +328,15 @@ $X_{on}$ & $X_{count}$ & $S(X_{on}, X_{count})$ \\ \hline
 \end{tabular}
 \end{center}
 \par
+Na miminalizáciu MTBDD sa dajú pou¾i» opä» pou¾i» obe techniky, teda odstránenie izomorfných podstromov
+a uzlov, kde $\mathit{high}(x)=\mathit{low}(x)$.
 Podµa tabuµky jednoducho zostrojíme a zminimalizujeme BDD, ktoré v¹ak nemá iba 2 terminálne hodnoty ale 3.
 \begin{figure}[ht!]
-  \centering
-  \includegraphics[width=100mm]{pic/bdd6.jpg}
+  \includegraphics[bb=-100 0 0 250]{fig/bdd6.eps}
   \caption{Príklad MTBDD}
   \label{picMTBDD}
 \end{figure}
-\section{BDD s potlaèenou nulou}
+
   
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Porovnání dostupných programových balíkù pro manipulaci
@@ -325,7 +348,7 @@ Podµa tabuµky jednoducho zostrojíme a zminimalizujeme BDD, ktoré v¹ak nemá iba 2
 V tejto kapitole si popí¹eme niektoré kni¾nice pracujúce s BDD. Bude
 popísaná ¹truktúra uzlu a spôsob práce s diagramami.
 \section{CUDD}
-Balíèek vyvíjaný na univerzite v Colorádu. U¾ od roku 1996 stálym vývojom 
+Balíèek bol vyvíjaný na univerzite v Colorádu. U¾ od roku 1996 stálym vývojom 
 dosiahol vynikajúce pamä»ové a výkonnostné výsledky. Podporuje prácu s BDD, 
 ADD a ZDD. V kni¾nici je taktie¾ implementovaná sada algoritmov na zlep¹enie
 usporiadania premenných.
@@ -337,7 +360,6 @@ Balíèek sa mô¾e pou¾íva» 3 spôsobmi:
 nutné prida» do balíka vlastné funkcie.
 \item {Interface} - OO jazyky umo¾nujú programátorom nestara» sa o správu pamäte.
 \end{enumerate}
-
 
 \subsection{©truktúra uzlu}
 \begin{lstlisting}
@@ -389,33 +411,326 @@ Premenná \texttt{hash} je ukazateµ na koreò stromu.
 Je treba si uvedomi», ¾e knihovòa BuDDy nepracuje s managerom, ale s poµom,
 preto sú prvky ¹truktúry iba indexy do poµa. Existuje tu v¹ak aj hash tabuµka. 
 Tá je tu v¹ak za úèelom zvý¹enia efektívnosti pri prístupe k uzlom.
-
 \subsection{Zhrnutie}
 BuDDy je kompletný balík na prácu s BDD. Podporuje usporiadavanie premenných.
 Podporuje taktie¾ prácu s booleovskými vektormi. BuDDy má veµmi kvalitne spracované
 C\verb!++! rozhranie, ktoré zefektívòuje prácu s týmto balíkom.
+
 \section{VATA}
-\section{CacBDD}
+Jedná sa o kni¾nicu implementovanú na Vysokom uèení technickom v Brne. Je napísaná
+v jazyku C\verb!++!. Hlavné vyu¾itie kni¾nice je vo formálnej verifikácií, ale
+je pou¾iteµná aj v iných odvetviach informatiky. VATA pou¾íva MTBDD na ulo¾enie tabuµky
+prechodov automatu.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Návrh implementácie}
+V tejto kapitole popí¹em svôj návrh implementácie jednotlivých dátových ¹truktúr a algoritmov.
+Popí¹em taktie¾ problémy ktoré som mal poèas implementácie.
 \section{Dátové ¹truktúry}
-\subsection{BDD node}
-\subsection{BDD manager}
-\subsection{Garbage collector}
-\subsection{Bit array}
-\subsection{Cache}
-\section{Previazanie BDD manager a BDD node}
-\section{Cachovanie}
-\section{Problémy pri implementácií}
+Èas» vysvetluje popis implementácie a prepojenia jednotlivých dátových ¹truktúr.
+\subsection{BDD uzol}\label{tBddNode}
+Základnou jednotkou ka¾dého diagramu je uzol. Môj návrh uzlu obsahuje v¹etky
+dôle¾ité premenné pre úplnu prácu s ním.
+\begin{lstlisting}
+typedef struct BddNode{
+  struct BddNode *high, *low;
+  unsigned int var;
+  unsigned int ref;
+  struct BddNode *nextFree;
+}tBddNode;
+\end{lstlisting}
+Premenné \texttt{high} a \texttt{low} sú ukazatele na vysokého a nízkeho následníka uzlu. V prípade, ¾e ide 
+o terminálny uzol, \texttt{high} a \texttt{low} sú nastavené na \texttt{NULL}. Na zistenie, èi je daný uzol
+terminálny sa pou¾íva makro \texttt{isTerminal(t)}. Premenná \texttt{var} je index do tabuµky návestí premenných, 
+o ktorej si viac povieme v sekcií \ref{tLabels}. Premenné \texttt{ref} a \texttt{nextFree} sú premenné, ktoré 
+vyu¾íva garbage collector. \texttt{ref} je poèítadlo referencií, ktoré je dôle¾ité pri zdielaných uzloch 
+a \texttt{nextFree} je ukazateµ, ktorý previazáva zoznam voµných premenných ktoré má k dispozícií manager. 
+Viac v kapitole \ref{tManager}.
+
+\subsection{Garbage collector}\label{tGarbage}
+Garbage collector má jednoduchú ¹truktúru.
+\begin{lstlisting}
+typedef struct Garbage{
+  tBddNode *nodes;
+  struct Garbage *next;
+}tGarbage;
+\end{lstlisting}
+Premenná \texttt{nodes} ukazuje na pole v¹etkých uzlov a premenná \texttt{next} na pola ïal¹ieho kusu pamäti,
+ktorý sa alokuje v prípade, ¾e manager nemá voµné uzly.
+
+\subsection{Návestia premenných} \label{tLabels}
+Je indexované pole re»azcov. ©truktúra je taktie¾ veµmi jednoduchá.
+\begin{lstlisting}
+typedef struct Labels{
+  char **lab;
+  unsigned int count;
+}tLabels;
+\end{lstlisting}
+Premenná \texttt{lab} je odkaz na pole re»azcov\footnote{Re»azcom je myslený typ \texttt{char *}.} a \texttt{count} 
+je premenná oznaèujúca poèet re»azcov, pou¾ívana hlavne pri realokácií prvej úrovne \texttt{lab}.
+
+\subsection{Medzivýsledky\,--\,\emph{Cache}} \label{tCache}
+Medzivýsledkami sa rozumejú nacachované uzly, ktoré zni¾ujú pamä»ovú zlo¾itos» a veµmi zjednodu¹ujú
+zdielanie podgrafov. ©truktúra je nasledujúca.
+\begin{lstlisting}
+typedef struct Cache{
+  unsigned int var;
+  tBddNode *high, *low, *record;
+  struct Cache * next;
+} tCache;
+\end{lstlisting}
+©truktúra Cache je zoznam, ktorého previazanie zais»uje premenná \texttt{next}. 
+Ulo¾ené uzly sa cacheujú ako trojica $[\mathit{var},\mathit{high},\mathit{low}]$.
+Záznamy ¹truktúry Cache tomu odpovedajú. Pri prehµadávaní cache sa sa táto trojica
+porovnáva s trojicou uzlu, ktorý kontrolujeme. V prípade zhody premenná \texttt{record}
+obsahuje ukazateµ na u¾ vytvorený uzol.
+
+\subsection{BDD manager}\label{tManager}
+Zastre¹ujúca ¹truktúra, riadiaca celú tvorbu a úpravy BDD.
+\begin{lstlisting}
+typedef struct Manager{
+  tGarbage *nodes;
+  tBddNode *free;
+  tLabels *variables;
+  tLabels *terminals;
+  tCache *cache;
+}tManager;
+\end{lstlisting}
+\texttt{nodes} je ukazateµ na ¹truktúru garbage collectoru, ktorá ma nastarosti uvoµnovanie a vytváranie nových
+zhlukov uzlov. \texttt{free} je ukazateµ na prvý voµný uzol. Ide opä» o zoznamovú implementáciu, kde sú v¹etky
+uzly prepojené pomocou \texttt{nextFree}, viz \ref{tBddNode}. \texttt{cache} je zoznam nacachovaných uzlov.
+\texttt{variables} a \texttt{terminals} sú návestia uzlov.
+\subsection{Chyby}
+Enumerácia v¹etkych chybových stavov balíka a odpovedajúce správy pre u¾ivateµa pomocou makra \texttt{throwError(e)}.
+
+\section{Algoritmy}
+Hlavné u¾ivateµské rozhranie tvoria funkcie \texttt{bddInit()}, ktorá inicializuje v¹etky komponenty pre manager,
+\texttt{bddDestroy()}, ktorá uvoµnuje v¹etky prostriedky, ktoré daný manager alokoval, \texttt{bddCreateNode()} 
+a \texttt{bddCreateTerminal()}, ktoré vytvoria uzol pre danú premennú alebo terminál a funkcia
+\texttt{bddApply()}.
+\subsection{Inicializácia}
+®iadnu z operácií nie je mo¾né prevádza» nad neinicializovaným managerom. Na inicializáciu slú¾i funkcia
+\texttt{bddInit()}, ktorá postupne inicializuje v¹etky prvky ¹truktúry. Najdôle¾itej¹iu èas»ou je inicializácia
+premennej \texttt{nodes}, ktorá vytvorí pole uzlov podµa zadanej veµkosti. V¹etky tieto uzly sú prístupné 
+zo zoznamu v premennej \texttt{free}. Automaticky sa generujú dva uzly \texttt{bddFalse} a \texttt{bddTrue}
+prístupné na globálnej úrovni.
+\par
+Inicializáciu zvy¹ných komponent tvorí zväè¹a nastavenie ukazateµa aktívnej èasti ¹truktúry na \texttt{NULL}.
+\subsection{Uvolòovanie}
+Na uvolnenie slú¾i funkcia \texttt{bddDestroy()}, ktorá postupne zru¹í v¹etky alokované ¹truktúry.
+Je neprípustné ukonèi» program pred zavolaním tejto funkcie, preto ¾e by dochádzalo k únikom pamäti\footnote{
+Memory leak je blok pamäti príslu¹iaci ukonèenému programu.}.
+\par
+Postupne sa uvolòujú prostriedky garbage collectora, tj. zru¹ia sa uzly a potom sa dealokuje ¹truktúra.
+Je potreba dáva» pozor na to, ¾e garbage collector je v podsate zoznam, teda je potrebné ho uvolni»
+korektne celý a nie iba prvý blok pamäti. Cache tvorí taktie¾ zoznam, preto sa musí uvolòova» postupne.
+Uvolnenie ¹truktúry návestí je iba volanie funkcie \texttt{free()} nad premennou ¹truktúry \texttt{lab}.
+Ïalej sa u¾ uvolòuje iba samotná ¹truktúra.
+\subsection{Vytvorenie uzlu}
+Na vytváranie uzlov sa pou¾íva funkcia \texttt{bddCreateNode()}. Funckia ukladá návestie vytváraného
+uzlu do premennej manager \texttt{variables}. V uzle sa nastavia v¹etky jeho informácie a to takto:
+\begin{enumerate}
+  \item nastavíme premennú \texttt{var} na index v tabuµke \texttt{variables}
+  \item poèítadlo referencií \texttt{ref} nastavíme na 1
+  \item oznaèíme uzol ako pou¾ívaný nastavením \texttt{nextFree} na \texttt{NULL}
+  \item vysokému následníkovi \texttt{high} priradíme \texttt{bddTrue}
+  \item nízkemu následníkovi \texttt{low} priradíme \texttt{bddFalse}
+  \item pozrieme do cache, èi u¾ takýto uzol neexistuje a vraciame ukazateµ
+\end{enumerate}
+V prípade nového terminálneho uzla sa pou¾íva funkcia \texttt{bddCreateTerminal()}.
+Sú tu iba nepatrné zmeny:
+\begin{itemize}
+  \item návestie sa vkladá do tabuµky \texttt{terminals}
+  \item referencie sa na terminálnych uzloch nepoèítajú
+  \item do \texttt{high} a \texttt{low} priradíme \texttt{NULL}
+\end{itemize}
+Vytváranie MTBDD je vo svojej podstate rovnaké ako vytváranie obyèajného BDD s rozdielom,
+¾e na vytvorenie uzlu sa pou¾íva funkcia \texttt{mtbddCreateNode()}. Tá okrem ¹tandartných
+parametrov funkcie \texttt{bddCreateNode()} príjma aj ukazatele na následníkov. 
+
+\subsection{Práca s mezdivýsledkami\,--\,\emph{Cacheovanie}}
+Ka¾dý vytvorený uzol (s výnimkou terminálnych) sa ukladá do ¹truktúry uvedenej
+v èasti \ref{tCache}. Ukladajú sa ako trojica vysokého následníka, nízkeho následníka
+a návestia premennej. Pri vytváraní uzlu sa uzol najskôr vytvorí, potom sa pozrie do
+cache pomocou funkcie \texttt{cacheCheck()}. Ak daný uzol u¾ existuje, funkcia vracia ukazateµ
+na uzol. Pôvodne vytvorený uzol sa ru¹í a ako výsledok sa vracia uzol ukazujúci na 
+u¾ existujúci uzol, ktorého ukazateµ sme vytiahli z cache. V prípade ¾e uzol e¹te neexistuje,
+vytvára sa nový cache záznam pomocou funkcie \texttt{cacheInsert()}, ktorá na zaèiatok
+zoznamu pridáva daný uzol. V prípade, ¾e poèítadlo referencií \texttt{ref} nejakého uzlu
+padne na nulu, uzol je uvoµnený a cache záznam zru¹ený.
+\subsection{Procedúra \emph{Apply()}}
+Základný princíp procedúry bol u¾ popísaný v èasti \ref{apply}. Implementáciu v kni¾nici
+tvoria dve funkcie. Prvá je \texttt{bddApply()}, ktorá sa volá z u¾ivateµského programu.
+Ako parameter dostáva dva ukazatele na diagramy (typ \texttt{tBddNode $*$}), manager, 
+v ktorom sa má procedúra vykona» (typ \texttt{tManager $*$}) a odkaz na funkciu
+vracajúcu nový diagram (typ \texttt{tBddNode $*(*)()$}). Funkcia spú¹»a rekurzívnu
+funkciu \texttt{\_apply()} s rovnakými parametrami. \texttt{\_apply()} sa rekurzívne
+zanoruje podµa algoritmu \ref{algApply}.
+\begin{algorithm}[h]
+  \caption{\_apply} \label{algApply}
+  \SetAlgoLongEnd
+  \LinesNumbered
+  \SetNlSty{normal}{}{:}
+ 
+  \KwIn{$X,Y,\mathit{func}$}
+  \KwOut{$\mathit{result}$}
+\medskip
+  \eIf{($X$ aj $Y$ sú terminály)}{
+    \Return $\mathit{func}(X,Y)$ \;
+  }{
+    \eIf{($X$ je nad $Y$)}{
+      vytvor uzol podµa $\mathit{var}_X$\;
+      zanor $X$\;
+    }{
+      \eIf{($Y$ je nad $X$)}{
+        vytvor uzol podµa $\mathit{var}_Y$\;
+        zanor $Y$\;
+      }{
+        vytvor uzol podµa jednej z premenných\;
+        zanor obe premenné\;
+      }
+    }
+  }
+  $\mathit{result}=\mathit{\_apply(X,Y,\mathit{func})}$\;
+  \medskip
+  \eIf{$(\mathit{low_{result}=high_{result}})$}{
+    $\mathit{result=low_{result}}$\;
+  }{
+    \If{$(\mathit{result}$ je v $\mathit{cache})$}{
+      uvolni $\mathit{result}$\;
+      \Return cacheovaný záznam\;
+    }
+  }
+  \medskip
+  \Return $\mathit{result}$\;
+\end{algorithm}
+
+Pri vytváraní nových uzlov v procedúre sa pou¾íva funkcia \texttt{bddNewNode()},
+ktorá má rovnaké správanie ako \texttt{bddCreateNode()} s rozdielom, ¾e nekontroluje
+cache. Cache sa kontroluje a¾ na konci procedúry spolu s kontrolovaním, èi potomkovia
+nie sú rovnakí.
+\par
+Kni¾nica disponuje základnými logickými funkciami, ktoré mô¾u by» ako parameter funkcie
+\texttt{bddApply()}. Tieto funkcie sú \texttt{bddOr()}, \texttt{bddNor()}, \texttt{bddAnd()},
+\texttt{bddNand()}, \texttt{bddXor()} a \texttt{bddNeg()}. Funkcia \texttt{bddNeg()}, sa prakticky
+nikdy nezavolá, lebo vo funckií \texttt{bddApply()} sa funkcia \texttt{bddNeg()} transformuje
+na funkciu \texttt{bddNand()} a ako korene oboch diagramov sa predá rovnaký ukazateµ.
+\par
+Za zmienku tie¾ stojí, ¾e funkcia \texttt{bddApply()} znièí ukazatele predané ako parameter.
+je to spôsobené tým, ¾e procedúra nemodifikuje BDD, ale vytvára úplne nové.
+
+\subsection{Práca s MTBDD}
+Ako bolo u¾ vy¹¹ie spomínané, kni¾nica pracuje na globálnej úrovni kvôli premenným
+\texttt{bddTrue} a \texttt{bddFalse}. Balík taktie¾ disponuje mno¾inou základných
+operácií nad binárnymi premennými. Pri práci s MTBDD u¾ivateµ vytvára vlastné terminálne
+uzly na globálnej úrovni a vlastné funkcie pre prácu s týmito uzlami.
+\par
+Je dôle¾ité poznamena», ¾e pri práci s MTBDD je veµmi dôle¾itou èas zvládnu» návrh prechodovej
+funkcie systému.
+
+\subsection{Uká¾ky kódov}
+Predvedieme si niektoré kon¹trukcie, ktoré sa vyu¾ívajú na tvorbu rozhodovacích diagramov.
+\subsubsection{Jednoduchá binárna funkcia}
+Nasledujúci kód vytvorí funkciu 
+$$f(a,b,c) = (a\wedge b) \vee (\neg a\wedge c)$$
+
+\begin{lstlisting}
+#include"bdd.h"
+
+int main(){
+  tError e;
+  tManager manager;
+  tBddNode *a,*b,*c;
+
+  e = bddInit(&manager,BDD_SMALL);
+  if(e) bddThrowError(e);
   
+  bddCreateNode(&manager,"A",&a);       // A
+  bddCreateNode(&manager,"B",&b);       // B
+  b = bddApply(&manager,b,NULL,bddNeg); // !B
+  a = bddApply(&manager,a,b,bddAnd);    // (A * !B)
+  
+  bddCreateNode(&manager,"C",&c);       // C
+  bddCreateNode(&manager,"D",&b);       // D
+  c = bddApply(&manager,c,b,bddAnd);    // (C * D)
+
+  a = bddApply(&manager,a,c,bddOr);     // (A * !B) + (C * D)
+
+  printTree(&manager,a);
+
+  bddDestroy(&manager);
+  return 0;
+}
+\end{lstlisting}
+V kóde si mô¾eme v¹imnú», ¾e niektoré ukazatele pou¾ívame viac krát. Je to z dôvodu, ¾e BDD
+predané ako parametre funkcie \texttt{bddApply} sú uvoµnené.
+\subsubsection{Práca s MTBDD}
+Práca s MTBDD je o nieèo málo zlo¾itej¹ia pri koncepcií. Pre jednoduchos» som zvolil uká¾ku 
+vytvorenia MTBDD popísaného na obrázku \ref{picMTBDD}. Dôle¾itá je správna analýza systému.
+Je potrebné vytvori» nové terminálne uzly, ktoré vytvoríme pomocou funckie
+\texttt{bbdCreateTerminal()}. Ïalej zostrojíme tabuµku výsledných stavov uplatnenia funkcie
+na jednotlivé terminály. Tabuµka je nasledujúca
+\begin{center}
+\begin{tabular}{|c|c c c|}
+\hline
+$\mathit{func}(x,y)$ & $\mathit{S_{off}}$ & $\mathit{S_{set}}$   & $\mathit{S_{count}}$  \\ 
+\hline
+$\mathit{S_{off}}$   & $\mathit{S_{off}}$ & $\mathit{S_{off}}$   & $\mathit{S_{off}}$  \\ 
+$\mathit{S_{set}}$   & $\mathit{S_{off}}$ & $\mathit{S_{set}}$   & $\mathit{S_{count}}$  \\ 
+$\mathit{S_{count}}$ & $\mathit{S_{off}}$ & $\mathit{S_{count}}$ & $\mathit{S_{count}}$  \\ \hline
+\end{tabular}
+\end{center}
+Tabuµka zna¾í prechodovú funckiu ná¹ho systému. Implementácia pomocou kni¾nice je nasledujúca
+\begin{lstlisting}
+#include"bdd.h"
+
+// vytvorenie terminalov na globalnej urovni
+tBddNode * Soff;
+tBddNode * Sset;
+tBddNode * Scount;
+
+// prechodova funkcia systemu
+tBddNode * func(tBddNode * x, tBddNode * y) {
+  if(x == y) return x;
+  if(x == Soff || y == Soff) return Soff;
+  return Scount;
+}
+
+int main(){
+  tError e;
+  tManager manager;
+  tBddNode *a,*b;
+
+  e = bddInit(&manager,BDD_SMALL);
+  if(e) bddThrowError(e);
+  
+  // inicializacia terminalov
+  bddCreateTerminal(&manager,"S_off",&Soff);
+  bddCreateTerminal(&manager,"S_set",&Sset);
+  bddCreateTerminal(&manager,"S_count",&Scount);
+  
+  // vytvorenie uzlov
+  mtbddCreateNode(&manager,"X_on_off",Sset,Soff,&a);
+  mtbddCreateNode(&manager,"X_set_count",Sset,Scount,&b);
+
+  // aplikacia funkcie
+  a = bddApply(&manager,a,b,func);
+  
+  printTree(&manager,a);
+
+  bddDestroy(&manager);
+  return 0;
+}
+\end{lstlisting}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Testy}
 \section{Memory leaks}
 \section{Rýchlos» vyhµadania uzlu}
-\section{Rýchlos» procedúry {\it Apply() } }
+\section{Rýchlos» procedúry \emph{Apply()} }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  

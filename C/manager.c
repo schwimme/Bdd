@@ -141,7 +141,7 @@ tError bddCreateTerminal(tManager * bdd, char * label, tBddNode ** result){
   return E_OK;
 }
 
-tError bddNewNode(tManager *bdd, char *label, tBddNode **result) {
+tError bddNewNode(tManager *bdd, char *label, tBddNode * high,tBddNode *low,tBddNode **result) {
   unsigned int labelIndex; 
   tError e; // possible error
   
@@ -153,8 +153,8 @@ tError bddNewNode(tManager *bdd, char *label, tBddNode **result) {
   e = labelsInsert(bdd->variables,label,&labelIndex);
   if(e) return e;
   (*result)->var = labelIndex;
-  (*result)->high = bddTrue;
-  (*result)->low = bddFalse;
+  (*result)->high = high;
+  (*result)->low = low;
   (*result)->ref = 1;
   (*result)->nextFree = NULL;
   
@@ -162,7 +162,21 @@ tError bddNewNode(tManager *bdd, char *label, tBddNode **result) {
 }
 
 tError bddCreateNode(tManager *bdd, char *label, tBddNode **result) {
-  tError e = bddNewNode(bdd,label,result);
+  tError e = bddNewNode(bdd,label,bddTrue,bddFalse,result);
+  if(e) return e;
+  
+  tBddNode * cached = cacheCheck(bdd,*result);
+  if(cached){
+    nodeDecRef(bdd,*result);
+    *result = cached;
+    return E_OK;
+  }
+  cacheInsert(bdd,*result);
+  
+  return E_OK;
+}
+tError mtbddCreateNode(tManager *bdd, char *label,tBddNode * high,tBddNode *low, tBddNode **result) {
+  tError e = bddNewNode(bdd,label,high,low,result);
   if(e) return e;
   
   tBddNode * cached = cacheCheck(bdd,*result);
@@ -176,6 +190,8 @@ tError bddCreateNode(tManager *bdd, char *label, tBddNode **result) {
   return E_OK;
 }
 
+
+
 void printNodeValue(tManager *bdd,tBddNode *x) {
   if(isTerminal(x)) 
     printf("%s\n",bdd->terminals->lab[x->var]);
@@ -185,18 +201,19 @@ void printNodeValue(tManager *bdd,tBddNode *x) {
 
 void printTree(tManager * bdd, tBddNode * x){
 
+  
   printNodeValue(bdd, x);  
-  
   if(isTerminal(x)) return;
-  
+
   for(unsigned int i = 0;i<=x->var;i++)
     printf(" ");
-  printf("high: ");
+  printf("+ ");
   printTree(bdd,x->high);
   
+  
   for(unsigned int i = 0;i<=x->var;i++)
     printf(" ");
-  printf("low: ");
+  printf("- ");
   printTree(bdd,x->low);
 }
 void printNodeInfo(tManager *bdd, tBddNode *node){
@@ -237,4 +254,5 @@ void nodeDecRef(tManager *bdd, tBddNode * node){
     cacheDelete(bdd,node);
   }
 }
+
 

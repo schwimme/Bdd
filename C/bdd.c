@@ -14,24 +14,24 @@ tBddNode * _apply(tManager *bdd, tBddNode *x, tBddNode *y,tBddNode*(*func)()) {
     return result;
 
   } else if(isTerminal(x)) { // only x is terminal
-    bddNewNode(bdd,bdd->variables->lab[y->var],&result);
+    bddNewNode(bdd,bdd->variables->lab[y->var],bddTrue,bddFalse,&result);
     xh = x; xl = x;
     yh = y->high; yl = y->low;
   } else if(isTerminal(y)) { // only y is terminal
-    bddNewNode(bdd,bdd->variables->lab[x->var],&result);
+    bddNewNode(bdd,bdd->variables->lab[x->var],bddTrue,bddFalse,&result);
     xh = x->high; xl = x->low;
     yh = y; yl = y;
   } else { // anyone is not terminals
     if(x->var == y->var){ // labels are equal
-      bddNewNode(bdd,bdd->variables->lab[x->var],&result);
+      bddNewNode(bdd,bdd->variables->lab[x->var],bddTrue,bddFalse,&result);
       xh = x->high; xl = x->low;
       yh = y->high; yl = y->low;
     } else if(x->var < y->var) { // x is over y
-      bddNewNode(bdd,bdd->variables->lab[x->var],&result);
+      bddNewNode(bdd,bdd->variables->lab[x->var],bddTrue,bddFalse,&result);
       xh = x->high; xl = x->low;
       yh = y; yl = y;
     } else { // y is over x
-      bddNewNode(bdd,bdd->variables->lab[y->var],&result);
+      bddNewNode(bdd,bdd->variables->lab[y->var],bddTrue,bddFalse,&result);
       xh = x; xl = x;
       yh = y->high; yl = y->low;
     }
@@ -39,20 +39,22 @@ tBddNode * _apply(tManager *bdd, tBddNode *x, tBddNode *y,tBddNode*(*func)()) {
   
   result->high = _apply(bdd,xh,yh,func);
   result->low = _apply(bdd,xl,yl,func);
-  if(result->high == result->low) result = result->low;
-  
-  tBddNode * cached = cacheCheck(bdd,result);
-  if(cached){
-    nodeDecRef(bdd,result);
-    result = cached;
+  if(result->high == result->low){ 
+    result = result->low;
   } else {
-    cacheInsert(bdd,result);
+    tBddNode * cached = cacheCheck(bdd,result);
+    if(cached){
+      nodeDecRef(bdd,result);
+      result = cached;
+    } else {
+      cacheInsert(bdd,result);
+    }
   }
   return result;
 }
 
 
-tBddNode * apply(tManager *bdd, tBddNode *x, tBddNode *y, tBddNode*(*func)()) {
+tBddNode * bddApply(tManager *bdd, tBddNode *x, tBddNode *y, tBddNode*(*func)()) {
   tBddNode * result;
   if(func == bddNeg) {
     y = x;
