@@ -29,9 +29,11 @@
 
 %zde muzeme vlozit vlastni balicky
 \usepackage{listings}
-\lstset{language=C}
+\lstset{ language=C }
+
 \usepackage{epstopdf}
 \usepackage[ruled,czech,linesnumbered]{algorithm2e}
+\usepackage{ dsfont }
 
 % =======================================================================
 % balíèek "hyperref" vytváøí klikací odkazy v pdf, pokud tedy pou¾ijeme pdflatex
@@ -75,22 +77,22 @@
   %bud pomoci nasledujicich parametru nebo pomoci vyhrazenych maker (viz dale)
   %===========================================================================
   %Klicova slova
-  keywords.cs={Klíèová slova v èeském jazyce.}, %klicova slova v ceskem jazyce
-  keywords.en={Klíèová slova v anglickém jazyce.}, %klicova slova v anglickem jazyce
+  keywords.cs={Klíèová slova v~èeském jazyce.}, %klicova slova v ceskem jazyce
+  keywords.en={Klíèová slova v~anglickém jazyce.}, %klicova slova v anglickem jazyce
   %Abstract
-  abstract.cs={Výtah (abstrakt) práce v èeském jazyce.}, % abstrakt v ceskem jazyce
-  abstract.en={Výtah (abstrakt) práce v anglickém jazyce.}, % abstrakt v anglickem jazyce
+  abstract.cs={Výtah (abstrakt) práce v~èeském jazyce.}, % abstrakt v ceskem jazyce
+  abstract.en={Výtah (abstrakt) práce v~anglickém jazyce.}, % abstrakt v anglickem jazyce
   %Prohlaseni
   declaration={Prohla¹uji, ¾e jsem tuto bakaláøskou práci vypracoval samostatnì pod vedením pana ...},
   %Podekovani (nepovinne)
-  acknowledgment={Zde je mo¾né uvést podìkování vedoucímu práce a tìm, kteøí poskytli odbornou pomoc.} % nepovinne
+  acknowledgment={Zde je mo¾né uvést podìkování vedoucímu práce a~tìm, kteøí poskytli odbornou pomoc.} % nepovinne
 }
 
 %Abstrakt (cesky, anglicky)
-\abstract[cs]{Binárny rozhodovací diagram BDD je dátová ¹truktúra vyu¾ívaná v mnohých oblastiach informatiky.
-Táto práca popisuje BDD ako matematický formalizmus a navrhuje mo¾nú reprezentáciu BDD v poèítaèi. Návrh
-je zameraný hlavne na rýchlos» zní¾ením poètu alokácií pamäte a na jednoduchos» a intuitívnos» pou¾ívania 
-kni¾nice. V práci sú aj rôzne jednoduché príklady pou¾itia kni¾nice a výstrahy, ktorým by sa mal programátor
+\abstract[cs]{Binárny rozhodovací diagram BDD je dátová ¹truktúra vyu¾ívaná v~mnohých oblastiach informatiky.
+Táto práca popisuje BDD ako matematický formalizmus a~navrhuje mo¾nú reprezentáciu BDD v~poèítaèi. Návrh
+je zameraný hlavne na rýchlos» zní¾ením poètu alokácií pamäte a~na jednoduchos» a~intuitívnos» pou¾ívania 
+kni¾nice. V~práci sú aj rôzne jednoduché príklady pou¾itia kni¾nice a~výstrahy, ktorým by sa mal programátor
 pri pou¾ívaní kni¾nice vyvarova».}
 %\abstract[en]{Do tohoto odstavce bude zapsán výtah (abstrakt) práce v anglickém jazyce.}
 
@@ -102,14 +104,14 @@ mno¾ina, výroková logika.}
 
 %Prohlaseni
 \declaration{Prehlasuje, ¾e túto bakalársku prácu som vypracoval sám pod vedením Ing. Ondøeje Lengála.
-V¹etky informácie som èerpal z predná¹ok predmetu Formální analýza a verifikáce na FIT VUT v Brnì,
-literatúry uvedenej v bibliografických citáciach a z vlastných skúseností, ktoré som nabral na
-FIT VUT v Brnì.}
+V¹etky informácie som èerpal z~predná¹ok predmetu Formální analýza a~verifikáce na FIT VUT v~Brnì,
+literatúry uvedenej v~bibliografických citáciach a~z~vlastných skúseností, ktoré som nabral na
+FIT VUT v~Brnì.}
 
 %Podekovani (nepovinne)
 \acknowledgment{Touto cestou by som rád poïakoval predov¹etkým môjmu vedúcemu BP Ing. Ondøejovi Lengálovi
-za poskytnuté materialy, in¹piráciu a hlavne trpezlivos» so mnou. Ïalej by som rád poïakoval rodine
-a v¹etkým blízkym za to, ¾e ma pri písaní BP psychicky dr¾ali.
+za poskytnuté materialy, in¹piráciu a~hlavne trpezlivos» so mnou. Ïalej by som rád poïakoval rodine
+a~v¹etkým blízkym za to, ¾e ma pri písaní BP psychicky dr¾ali.
 }
 
 \begin{document}
