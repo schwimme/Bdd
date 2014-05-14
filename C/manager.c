@@ -99,7 +99,10 @@ tError bddCreateNode(tManager *bdd, char *label, tBddNode * high,tBddNode *low,t
   if(e) return e;
   
   *result = cacheCheck  (bdd->cache,high, low, labelIndex);
-  if(*result) return E_OK;
+  if(*result){
+    nodeIncRef(*result);
+    return E_OK;
+  }
   
   if(bddNewNode(bdd,labelIndex,high,low,result)) return E_FREE_NODES;
   
@@ -134,16 +137,18 @@ void printTree(tManager * bdd, tBddNode * x){
 
 
 void printNodeInfo(tManager *bdd, tBddNode *node){
-  if(isTerminal(node)){
-    printf("Address:\t%p\n",(void*)node);
-    printf("Terminal:\t"); printNodeValue(bdd,node);
-  } else if(!(node->nextFree)){
-    printf("Address:\t%p\n",(void*)node);
-    printf("Node:\t"); printNodeValue(bdd,node);
-    printf("Order:\t%d\n",node->var);
-    printf("Ref:\t%d\n",node->ref);
-    printf("High:\t");printNodeValue(bdd,node->high);
-    printf("Low:\t");printNodeValue(bdd,node->low);
+  if(!(node->nextFree)){
+    if(isTerminal(node)){
+      printf("Address:\t%p\n",(void*)node);
+      printf("Terminal:\t"); printNodeValue(bdd,node);
+    } else {
+      printf("Address:\t%p\n",(void*)node);
+      printf("Node:\t"); printNodeValue(bdd,node);
+      printf("Order:\t%d\n",node->var);
+      printf("Ref:\t%d\n",node->ref);
+      printf("High:\t");printNodeValue(bdd,node->high);
+      printf("Low:\t");printNodeValue(bdd,node->low);
+    }
   } else {
     printf("Node is not in use\n");
   }

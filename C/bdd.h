@@ -18,5 +18,6 @@ tBddNode * bddAnd(tBddNode *,tBddNode*);
 tBddNode * bddNand(tBddNode *,tBddNode*);
 tBddNode * bddXor(tBddNode *,tBddNode*);
 tBddNode * bddNeg(tBddNode *,tBddNode*);
+tBddNode * bddImp(tBddNode *,tBddNode*);
 
 #endif // _BDD_H_

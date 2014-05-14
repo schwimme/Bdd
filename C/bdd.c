@@ -46,6 +46,7 @@ tBddNode * _apply(tManager *bdd, tBddNode *x, tBddNode *y,tBddNode*(*func)(tBddN
     if(cached){
       nodeDecRef(bdd,result);
       result = cached;
+      nodeIncRef(result);
     } else {
       cacheInsert(bdd->cache,result);
     }
@@ -56,14 +57,11 @@ tBddNode * _apply(tManager *bdd, tBddNode *x, tBddNode *y,tBddNode*(*func)(tBddN
 
 tBddNode * bddApply(tManager *bdd, tBddNode *x, tBddNode *y, tBddNode*(*func)()) {
   tBddNode * result;
+
   if(func == bddNeg) {
-    y = x;
-    result = _apply(bdd,x,y,bddNand);
-    nodeDecRef(bdd,x);
+    result = _apply(bdd,x,x,bddNand);
   }else { 
     result = _apply(bdd,x,y,func);
-    nodeDecRef(bdd,x);
-    nodeDecRef(bdd,y);
   }
   return result;
 }
@@ -96,5 +94,10 @@ tBddNode * bddNand(tBddNode *x,tBddNode*y){
 
 tBddNode * bddXor(tBddNode *x,tBddNode*y){
   if(x == y) return bddFalse;
+  return bddTrue;
+}
+
+tBddNode * bddImp(tBddNode *x,tBddNode*y){
+  if(x == bddTrue && y == bddFalse) return bddFalse;
   return bddTrue;
 }
