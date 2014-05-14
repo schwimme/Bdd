@@ -10,7 +10,7 @@
 
 #include"manager.h"
 
-tBddNode * bddApply(tManager *,tBddNode*,tBddNode*,tBddNode*(*)());
+tBddNode * bddApply(tManager *,tBddNode*,tBddNode*,tBddNode*(*)(tBddNode *, tBddNode *));
 
 tBddNode * bddOr(tBddNode *,tBddNode*);
 tBddNode * bddNor(tBddNode *,tBddNode*);

@@ -15,11 +15,13 @@ typedef enum Error {
   E_GAR_MALLOC,
   E_LAB_MALLOC,
   E_FREE_NODES,
-  E_MALLOC_CACHE
+  E_CACHE_MALLOC
 } tError;
 
-#define bddThrowError(E){\
+#define bddThrowError(E,bdd){\
   fprintf(stderr,"%s\n",ERRORS[E-1]);\
+  bddDestroy(bdd);\
+  return 1;\
 }
 
 extern const char * ERRORS[];

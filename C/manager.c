@@ -17,7 +17,7 @@ tError bddInit(tManager * bdd,unsigned int size) {
   if(nodeInit(&(bdd->nodes),size)) return E_GAR_MALLOC;
   if(labelsInit(&(bdd->variables))) return E_INIT_MALLOC;
   if(labelsInit(&(bdd->terminals))) return E_INIT_MALLOC;
-  
+  if(cacheInit(&(bdd->cache),128)) return E_CACHE_MALLOC;
   // set free nodes
   bdd->free = &(bdd->nodes->nodes[0]);
   
@@ -26,7 +26,6 @@ tError bddInit(tManager * bdd,unsigned int size) {
   if(bddCreateTerminal(bdd,"true",&bddTrue)) return E_FREE_NODES;
   
   // init cache
-  bdd->cache = NULL;
   return E_OK;
 }
 
@@ -35,69 +34,9 @@ void bddDestroy(tManager * bdd){
   nodeDestroy(bdd->nodes);
   labelsDestroy(bdd->variables);
   labelsDestroy(bdd->terminals);
-  
-  // destroy cache
-  tCache * tmp;
-  for(tCache * iterator = bdd->cache;iterator != NULL; iterator=tmp){
-    tmp = iterator->next;
-    free(iterator);
-  }
+  cacheDestroy(bdd->cache);
 }
 
-
-tError cacheInsert(tManager*bdd,tBddNode*node) {
-  if(cacheCheck(bdd,node)) return E_OK;
-  
-  tCache * new = malloc(sizeof(tCache)); // place for new record
-  if(!new) return E_MALLOC_CACHE;
-  
-  // insert data
-  new->high = node->high;
-  new->low = node->low;
-  new->var = node->var;
-  new->record = node;
-  
-
-  new->next = bdd->cache;
-  bdd->cache = new;
-  
-  return E_OK;
-}
-
-void cacheDelete(tManager*bdd,tBddNode*node) {
-  if(!(bdd->cache)) return;
-  tCache * first = bdd->cache->next;
-  tCache * second = bdd->cache; // carriage
-  
-  if(node == second->record){ // first record
-    bdd->cache = second->next;
-    free(second);
-    return;
-  } else {
-    while(first != NULL) { // it isn't first record
-      if(first->record == node){ // check current
-        second->next = first->next;
-        free(first);
-        return;
-      }
-      first = first->next; // succ current and carriage
-      second = second->next;
-    }
-  }
-  return;
-}
-
-tBddNode * cacheCheck(tManager*bdd,tBddNode * node){
-  for(tCache * iterator = bdd->cache;iterator!=NULL;iterator=iterator->next){
-    if(iterator->var == node->var &&
-       iterator->high == node->high &&
-       iterator->low == node->low){
-         nodeIncRef(iterator->record);
-         return iterator->record;
-    }
-  }
-  return NULL;
-}
 
 
 tBddNode * bddGetNode(tManager * bdd) {
@@ -108,14 +47,10 @@ tBddNode * bddGetNode(tManager * bdd) {
   if(!bdd->free){
     tGarbage * gar;
     nodeInit(&gar,BDD_SMALL);
-    
-    //find last block of garbage
-    tGarbage * iterator;
-    for(iterator = bdd->nodes;iterator->next!=NULL;iterator=iterator->next);
-    
-    // connect new block to prievous
-    iterator->next = gar;
-    
+
+    gar->next = bdd->nodes;
+    bdd->nodes = gar;
+
     // set new free nodes
     bdd->free = &(gar->nodes[0]);
   }
@@ -141,18 +76,13 @@ tError bddCreateTerminal(tManager * bdd, char * label, tBddNode ** result){
   return E_OK;
 }
 
-tError bddNewNode(tManager *bdd, char *label, tBddNode * high,tBddNode *low,tBddNode **result) {
-  unsigned int labelIndex; 
-  tError e; // possible error
+tError bddNewNode(tManager *bdd, unsigned int label, tBddNode * high,tBddNode *low,tBddNode **result) {
   
   *result = bddGetNode(bdd); // create node
   if(!(*result)) return E_FREE_NODES;
   
   
-  // set node values
-  e = labelsInsert(bdd->variables,label,&labelIndex);
-  if(e) return e;
-  (*result)->var = labelIndex;
+  (*result)->var = label;
   (*result)->high = high;
   (*result)->low = low;
   (*result)->ref = 1;
@@ -161,37 +91,23 @@ tError bddNewNode(tManager *bdd, char *label, tBddNode * high,tBddNode *low,tBdd
   return E_OK;
 }
 
-tError bddCreateNode(tManager *bdd, char *label, tBddNode **result) {
-  tError e = bddNewNode(bdd,label,bddTrue,bddFalse,result);
+tError bddCreateNode(tManager *bdd, char *label, tBddNode * high,tBddNode *low,tBddNode **result) {
+  // node exist already
+  tError e;
+  unsigned int labelIndex;
+  e = labelsInsert(bdd->variables,label,&labelIndex);
   if(e) return e;
   
-  tBddNode * cached = cacheCheck(bdd,*result);
-  if(cached){
-    nodeDecRef(bdd,*result);
-    *result = cached;
-    return E_OK;
-  }
-  cacheInsert(bdd,*result);
+  *result = cacheCheck  (bdd->cache,high, low, labelIndex);
+  if(*result) return E_OK;
+  
+  if(bddNewNode(bdd,labelIndex,high,low,result)) return E_FREE_NODES;
+  
+  e = cacheInsert(bdd->cache,*result);
+  if(e) return e;
   
   return E_OK;
 }
-tError mtbddCreateNode(tManager *bdd, char *label,tBddNode * high,tBddNode *low, tBddNode **result) {
-  tError e = bddNewNode(bdd,label,high,low,result);
-  if(e) return e;
-  
-  tBddNode * cached = cacheCheck(bdd,*result);
-  if(cached){
-    nodeDecRef(bdd,*result);
-    *result = cached;
-    return E_OK;
-  }
-  cacheInsert(bdd,*result);
-  
-  return E_OK;
-}
-
-
-
 void printNodeValue(tManager *bdd,tBddNode *x) {
   if(isTerminal(x)) 
     printf("%s\n",bdd->terminals->lab[x->var]);
@@ -201,7 +117,6 @@ void printNodeValue(tManager *bdd,tBddNode *x) {
 
 void printTree(tManager * bdd, tBddNode * x){
 
-  
   printNodeValue(bdd, x);  
   if(isTerminal(x)) return;
 
@@ -216,6 +131,8 @@ void printTree(tManager * bdd, tBddNode * x){
   printf("- ");
   printTree(bdd,x->low);
 }
+
+
 void printNodeInfo(tManager *bdd, tBddNode *node){
   if(isTerminal(node)){
     printf("Address:\t%p\n",(void*)node);
@@ -251,7 +168,7 @@ void nodeDecRef(tManager *bdd, tBddNode * node){
     if(!isTerminal(node->high)) nodeDecRef(bdd,node->high);
     if(!isTerminal(node->low))  nodeDecRef(bdd,node->low);
     nodeFree(bdd,node);
-    cacheDelete(bdd,node);
+    cacheDelete(bdd->cache,node);
   }
 }
 

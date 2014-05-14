@@ -1,11 +1,12 @@
 CC=gcc 
 FLAGS=-std=c99 -Wall -Wextra -pedantic
 OUTPUT=main
-OBJ= labels.o node.o errors.o manager.o bdd.o
-OBJ-MAKE=labels node errors manager bdd
+OBJ= cache.o labels.o node.o errors.o manager.o bdd.o
+OBJ-MAKE=cache labels node errors manager bdd
 
 
-all: 
+all:
+	@clear; 
 	$(CC) $(FLAGS) $(OBJ) main.c -o $(OUTPUT)
 
 obj:$(OBJ-MAKE)
@@ -13,9 +14,10 @@ obj:$(OBJ-MAKE)
 
 bdd:bdd.c bdd.h
 	$(CC) $(FLAGS) -c bdd.c
+
+
 manager:manager.c manager.h
 	$(CC) $(FLAGS) -c manager.c
-
 
 errors:errors.c errors.h
 	$(CC) $(FLAGS) -c errors.c
@@ -25,6 +27,11 @@ node:node.c node.h
  
 labels:labels.c labels.h
 	$(CC) $(FLAGS) -c labels.c
+  
+cache:cache.c cache.h
+	$(CC) $(FLAGS) -c cache.c
+
+  
 run:
 	clear; 
 	valgrind -q --leak-check=full ./$(OUTPUT)
