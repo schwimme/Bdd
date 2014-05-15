@@ -689,20 +689,35 @@ Programátor by mal vyu¾íva» iba funkcie urèené pre vonkaj¹iu prácu s balíkom, po
 \end{itemize}
 
 \chapter{Testy}
-\section{Memory leaks}
-\section{Rýchlos» vyhµadania uzlu}
-\section{Rýchlos» procedúry \emph{Apply()} }
+V tejto kapitole popí¹em ako bol balík testovaný.
+\section{Uniky pamäti}
+Dealokáciu v¹etkých dátových ¹truktúr súvisiacich s BDD má nastarosti procedúra \texttt{bddDestroy( tManager *mgr)}. Na testovanie pamäti som pou¾il nástroj \texttt{valgrind}\footnote{\url{http://valgrind.org/}.}. Testy sú zamerané hlavne na správnos» uvolòovania v¹etkých vyu¾ívaných zdrojov. Samozrejme \text{valgrind} automaticky kontroluje, èi nepracujeme s neinicializovanými premennými alebo èi nesiahame do pamäti, kam prístup nemáme. Pokiaµ nebude povedané inak, v¹etky testy sa vykonávajú nad managerom inicializovaným na veµkos» \texttt{BDD\_SMALL}
+
+\paragraph{Inicializácia} V programe sa volá inicializácia managera pomocou funkcie \texttt{bddInit()} a následne sa volá funkcia \texttt{bddDestroy()}, ktorá by mala korektne uvoµni» v¹etky alokované èasti pamäte. Zdrojový kód sa nachádza v \texttt{./tests/test-init.c} a spú¹»a sa pomocou príkazu \texttt{make t-init} v koreòovom adresári.\\
+\texttt{make t-init\\
+==24458== HEAP SUMMARY:\\
+==24458==     in use at exit: 0 bytes in 0 blocks\\
+==24458==   total heap usage: 10 allocs, 10 frees, 8,856 bytes allocated\\
+==32244== All heap blocks were freed -- no leaks are possible}\\
+
+\paragraph{Jednoduchá funkcia} Program inicializuje managera, a vytvorí jednoduchú logickú funkciu o 3 logických premenných. Funkcia je nasledujúca $$f(a,b,c)=(\neg a \wedge b)\vee(a\wedge \neg b \wedge \neg c).$$ Kód je ulo¾ený v \texttt{./tests/test-simplyf.c} a spú¹»a sa príkazom \texttt{make t-simplyf} v koreòovom adresári.\\
+\texttt{make t-simplyf\\
+==24458== HEAP SUMMARY:\\
+==24458==     in use at exit: 0 bytes in 0 blocks\\
+==32244==   total heap usage: 13 allocs, 13 frees, 8,904 bytes allocated\\
+==32244== All heap blocks were freed -- no leaks are possible}\\
+
+\paragraph{Zlo¾itá funkcia} Program inicializuje managera a vykonáva nad ním nasledujúcu funkciu $$f(x_1\,\dots,x_{33})=(x_1\wedge \dots \wedge x_{33}),$$ Manager sa inicializuje na veµkos» 16. Tento test sleduje prácu s novými blokmi pamäte a s cache. Kód je ulo¾ený v \texttt{./tests/test-bigf.c} a spú¹»a sa príkazom \texttt{make t-bigf}.\\
+\texttt{make t-bigf\\
+==11659== HEAP SUMMARY:\\
+==11659==     in use at exit: 0 bytes in 0 blocks\\
+==11659==   total heap usage: 65 allocs, 65 frees, 30,544 bytes allocated\\
+==11659== All heap blocks were freed -- no leaks are possible}\\
+
+\paragraph{Zhrnutie testov zameraných na pamä»} Pri korektom pou¾ívaní, kni¾nica nemá problém s alokáciou a uvoµnovaním zdrojov, nespôsobuje úniky pamäte a nespôsobuje neoprávnené prístupy do pamäti.
 
 
-
-
-
-
-\chapter{Porovnanie s kni¾nicami CUDD a VATA}
-
-
-
-
+\chapter{Porovnanie s kni¾nicou CUDD}
 
 
 
