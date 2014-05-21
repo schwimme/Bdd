@@ -1,0 +1,28 @@
+# Encoding=UTF-8
+
+Readme k zdrojovým súborom textu bakalárskej práce
+
+Popis pravidiel:
+  $ make 
+    Preloží zdrojové súbory pomocou pdflatex a odstráni nepotrebné súbory.
+
+  $ make pdf
+    Preloží zdrojové súbory pomocou pdflatex.
+    
+  $ make projekt.pdf
+    Preloží zdrojové súbory pomocou pdflatex.
+
+  $ make desky
+    Vysádzanie desiek do súboru desky.pdf pomocou pdflatex.
+    
+  $ make picx
+    Prekonvertovanie fig/*.eps na fit/*.pdf.
+  
+  $ make clean
+    Vymazanie nepotrebných súborov.
+  
+  $ make del
+    Vymazanie všetkých súborov .pdf.
+  
+  $ make pack
+    Zabalenie archívu so všetkými potrebnými súbormi na preklad

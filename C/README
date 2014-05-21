@@ -1,0 +1,41 @@
+# Encoding=UTF-8
+
+Readme k zdrojovým súborom knižnice
+
+Popis pravidiel:
+  $ make 
+    Preloží zdrojové súbory do binárnych
+
+  $ make obj
+    Preloží zdrojové súbory do binárnych
+  
+  $ make [bdd, manager, errors, node, labels, cache]
+    Preloží binárky jednotlivých súborov
+  
+  $ make meas
+    Preloží binárku meracieho modulu
+  
+  $ make app
+    Prekladá aplikáciu napísanú v main.c, výsledok je spustiteľný súbor main.
+    Výstupný súbor možno premenovať zmenením makra OUTPUT v makefile.
+    Pre preloženie app je nutné mať preložené všetky binárky pomocou
+    $ make obj. Pokiaľ v main.c používate aj funkcie z knižnice measurement.h
+    je nutné ju zvlášť linkovať pomocou #include"measurement.h" v zdrojovom 
+    súbore. V tomto prípade je nutné mať preloženú binárku measurement.o 
+    pomocou $ make meas.
+  
+  $ make [t-init, t-simply, t-bigf, m-init, m-simplyf, m-bigf]
+    Prekladá a spúšťa testy popísané v tests/. Musia byť preložené binárky.
+    Pre testy t-* musí byť taktiež preložené measurement.o.
+    Testy m-* spúšťajú program valgrind.
+  
+  $ make clean
+    Vymazanie binárok, spustiteľných súborov, zabaleného archívu a súboru
+    gmon.out, ktorý je výstup profilovania.
+  
+  $ make pack
+    Zabalenie archívu
+  
+  $ make prof
+    Profiling. Výsledok je spustiteľný súbor main-prof, ktorý sa dá ďalej
+    skúmať pomocou programu gprof.

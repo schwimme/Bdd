@@ -9,8 +9,8 @@
 % pøipomínky posílejte na e-mail: bidlom AT fit.vutbr.cz
 % vim: set syntax=tex encoding=latin2:
 %============================================================================
-% \documentclass[cover]{fitthesis} % odevzdani do wisu - odkazy, na ktere se da klikat
-\documentclass[print]{fitthesis} % pro tisk - na odkazy se neda klikat, bez desek
+\documentclass{fitthesis} % odevzdani do wisu - odkazy, na ktere se da klikat
+% \documentclass[print]{fitthesis} % pro tisk - na odkazy se neda klikat, bez desek
 %\documentclass[english,print]{fitthesis} % pro tisk - na odkazy se neda klikat
 %      \documentclass[english]{fitthesis}
 % * Je-li prace psana v anglickem jazyce, je zapotrebi u tridy pouzit 
@@ -34,6 +34,7 @@
 \usepackage{epstopdf}
 \usepackage[ruled,czech,linesnumbered]{algorithm2e}
 \usepackage{ dsfont }
+\usepackage{multirow}
 
 % =======================================================================
 % balíèek "hyperref" vytváøí klikací odkazy v pdf, pokud tedy pou¾ijeme pdflatex
@@ -89,30 +90,18 @@
 }
 
 %Abstrakt (cesky, anglicky)
-\abstract[cs]{Binárny rozhodovací diagram BDD je dátová ¹truktúra vyu¾ívaná v~mnohých oblastiach informatiky.
-Táto práca popisuje BDD ako matematický formalizmus a~navrhuje mo¾nú reprezentáciu BDD v~poèítaèi. Návrh
-je zameraný hlavne na rýchlos» zní¾ením poètu alokácií pamäte a~na jednoduchos» a~intuitívnos» pou¾ívania 
-kni¾nice. V~práci sú aj rôzne jednoduché príklady pou¾itia kni¾nice a~výstrahy, ktorým by sa mal programátor
-pri pou¾ívaní kni¾nice vyvarova».}
-%\abstract[en]{Do tohoto odstavce bude zapsán výtah (abstrakt) práce v anglickém jazyce.}
+\abstract[cs]{Binární rozhodovací diagram je datová struktura vyu¾ívaná v~mnoha oblastech informatiky. Tato práce popisuje BDD ako matematický formalizmus a~navrhuje mo¾nou reprezentaci BDD v~poèítaèi. Návrh je zamìøen pøedev¹ím na rychlost sní¾ením poètu alokací pamìti a~na jednoduchost a~intuitivnost vyu¾ívaní knihovny. V~práci je nìkolik jednoduchých pøíkladù u¾ití knihovny a~výstrahy, kterým by se mìl programátor pøi pou¾ívaní knihovny vyvarovat. Navr¾ená reprezentace byla implementována v~jazyce C.}
+\abstract[en]{Binary decision program is a~data structure used in many areas of information technology. This thesis describes BDD as a~mathematical formalism and proposes possible representation of BDD in a~computer. The propose is focused mainly on a~reduction speed of number of memory allocation and on a~simplicity and an intuitive system of using a~library. There are several examples of a~library usage and warnings which programmer should avoid of in the thesis. Proposed representation was implemented in C language.}
 
 %Klicova slova (cesky, anglicky)
-\keywords[cs]{Binárny rozhodovací diagram, implementácia, logická funkcia, logická premenná,
-vysoký následník, nízky následník, uzol, koreò, terminál, procedúra apply, matematický formalizmus,
-mno¾ina, výroková logika.}
-%\keywords[en]{Sem budou zapsána jednotlivá klíèová slova v anglickém jazyce, oddìlená èárkami.}
+\keywords[cs]{Binární rozhodovací diagram, logická funkce, logická promìnná, výroková logika.}
+\keywords[en]{Binary decision diagram, logic function, logic variable, propositional logic.}
 
 %Prohlaseni
-\declaration{Prehlasuje, ¾e túto bakalársku prácu som vypracoval sám pod vedením Ing. Ondøeje Lengála.
-V¹etky informácie som èerpal z~predná¹ok predmetu Formální analýza a~verifikáce na FIT VUT v~Brnì,
-literatúry uvedenej v~bibliografických citáciach a~z~vlastných skúseností, ktoré som nabral na
-FIT VUT v~Brnì.}
+\declaration{Prehlasujem, ¾e túto bakalársku prácu som vypracoval sám pod vedením Ing. Ondøeje Lengála. V¹etky informácie som èerpal z~predná¹ok predmetu Formální analýza a~verifikáce na FIT VUT v~Brnì a~literatúry uvedenej v~bibliografických citáciach.}
 
 %Podekovani (nepovinne)
-\acknowledgment{Touto cestou by som rád poïakoval predov¹etkým môjmu vedúcemu BP Ing. Ondøejovi Lengálovi
-za poskytnuté materialy, in¹piráciu a~hlavne trpezlivos» so mnou. Ïalej by som rád poïakoval rodine
-a~v¹etkým blízkym za to, ¾e ma pri písaní BP psychicky dr¾ali.
-}
+\acknowledgment{Touto cestou by som rád poïakoval predov¹etkým môjmu vedúcemu BP Ing. Ondøejovi Lengálovi za poskytnuté materialy, in¹piráciu a~hlavne trpezlivos» so mnou. Ïalej by som rád poïakoval rodine a~v¹etkým blízkym za to, ¾e ma pri písaní BP psychicky podr¾ali.}
 
 \begin{document}
   % Vysazeni titulnich stran

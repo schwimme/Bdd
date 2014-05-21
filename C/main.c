@@ -9,43 +9,35 @@
 */
 #include"bdd.h"
 
+tBddNode * Son, *Soff, *Sset, *Scount;
+
+tBddNode * func(tBddNode *x, tBddNode *y){
+  if(x == y)                  return x;
+  if(x == Soff || y == Soff)  return Soff;
+  if(x == Son)                return y;
+  if(y == Son)                return x;
+  return Scount;
+}
+
 int main(){
-  tError e;
-  tManager manager;
-  tBddNode *a, *b, *c, *d, *tmp;
+  tManager mgr;
+  // tBddNode *xOnOff, *xSetCount, *tmp;
   
-  e = bddInit(&manager,BDD_SMALL);
-  if(e) bddThrowError(e,&manager);
+  bddInit(&mgr,BDD_SMALL);
 
-  e = bddCreateNode(&manager,"a",bddTrue,bddFalse,&a);    // a
-  if(e) bddThrowError(e,&manager);
-
-  e = bddCreateNode(&manager,"b",bddFalse,bddTrue,&b);    // !b priamo
-  if(e) bddThrowError(e,&manager);
-
-  e = bddCreateNode(&manager,"c",bddTrue,bddFalse,&tmp);  // c
-  if(e) bddThrowError(e,&manager);
-  c = bddApply(&manager,tmp,NULL,bddNeg);                 // !c pomocou apply
-  nodeDecRef(&manager,tmp);
+  // bddCreateTerminal(&mgr,"S_on",   &Son);
+  // bddCreateTerminal(&mgr,"S_off",  &Soff);
+  // bddCreateTerminal(&mgr,"S_set",  &Sset);
+  // bddCreateTerminal(&mgr,"S_count",&Scount);
   
-  e = bddCreateNode(&manager,"d",bddTrue,bddFalse,&d);    // d
-  if(e) bddThrowError(e,&manager);
+  // bddCreateNode(&mgr,"X_on_off",   Son, Soff,  &xOnOff);
+  // bddCreateNode(&mgr,"X_count_set",Scount,Sset,&xSetCount);
   
-  tmp = bddApply(&manager,a,b,bddAnd);               // a * !b
-  nodeDecRef(&manager,a);
-  nodeDecRef(&manager,b);
+  // tmp = bddApply(&mgr,xOnOff,xSetCount,func);
+  // nodeDecRef(&mgr,xOnOff);
+  // nodeDecRef(&mgr,xSetCount);
   
-  a = bddApply(&manager,c,d,bddAnd);                // !c * d
-  nodeDecRef(&manager,c);
-  nodeDecRef(&manager,d);
+  // printTree(&mgr,tmp);
   
-  b = bddApply(&manager,a,tmp,bddOr);               // (a * !b) + (!c * d)
-  nodeDecRef(&manager,a);
-  nodeDecRef(&manager,tmp);
-
-  printNodeInfo(&manager,b->high->high);
-  printNodeInfo(&manager,b->low);
-
-  bddDestroy(&manager);
-  return 0;
+  bddDestroy(&mgr);
 }

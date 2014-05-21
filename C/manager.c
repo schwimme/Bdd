@@ -17,7 +17,7 @@ tError bddInit(tManager * bdd,unsigned int size) {
   if(nodeInit(&(bdd->nodes),size)) return E_GAR_MALLOC;
   if(labelsInit(&(bdd->variables))) return E_INIT_MALLOC;
   if(labelsInit(&(bdd->terminals))) return E_INIT_MALLOC;
-  if(cacheInit(&(bdd->cache),128)) return E_CACHE_MALLOC;
+  if(cacheInit(&(bdd->cache),size)) return E_CACHE_MALLOC;
   // set free nodes
   bdd->free = &(bdd->nodes->nodes[0]);
   

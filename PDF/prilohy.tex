@@ -1,6 +1,44 @@
-%\chapter{Obsah CD}
-%\chapter{Manual}
-%\chapter{Konfigraèní soubor}
-%\chapter{RelaxNG Schéma konfiguraèního soboru}
-%\chapter{Plakat}
+\chapter{Obsah CD}
+Na prilo¾enom CD sa nachádzajú nasledujúce súbory a~adresáre:
+\begin{itemize}
+  \item src/ \quad prieèinok so zdrojovými kódmi,
+  \begin{itemize}
+    \item tests/ \quad prieèinok s~testami,
+    \item *.h, *.c \quad zdrojové kódy jednotlivých modulov,
+    \item main.c  \quad priestor pre Vá¹ program,
+    \item makefile \quad súbor pre prácu s~prieèinkom src/,
+    \item README   \quad popis pravidiel v~makefile,
+  \end{itemize}
+  \item bp\_tex/ \quad zdrojové súbory k~tomuto textu,
+  \begin{itemize}
+    \item zdrojové súbory a~obrázky,
+    \item makefile \quad súbor pre prácu s~prieèinkom,
+    \item README \quad  popis pravidiel makefile,
+  \end{itemize}
+  \item bp-xtrosk00-desky.pdf \quad Vysádzanie desiek BP,
+  \item bp-xtrosk00-print.pdf \quad tento text,
+  \item bp-xtrosk00-wis.pdf \quad tento text s hypertextovými odkazmi,
+  \item README      \quad obsah CD
+\end{itemize}
 
+\chapter{Programátorské rozhranie}
+Programátor by mal vyu¾íva» iba funkcie urèené pre vonkaj¹iu prácu s~balíkom, pou¾ívanie vnútorných funkcií balíka mô¾e spôsobi» nepredvídateµné správanie. Funkcie urèené pre programátora sú:
+\begin{itemize}
+  \item\texttt{tError bddInit(tManager *mgr, unsigned int size)},
+  \item\texttt{void bddDestroy(tManager *mgr)},
+  \item\texttt{tBddNode *bddApply(tManager *mgr, tBddNode *x, tBddNode *y, tBddNode *(*func) (tBddNode *, tBddNode *))},
+  \item\texttt{tBddNode *bddCreateNode(tManager *mgr,char *label, tBddNode *high, tBddNode *low, tBddNode **result)},
+  \item\texttt{tBddNode *bddCreateTerminal(tManager *mgr,char *label, tBddNode **result)},
+  \item\texttt{void nodeDecRef(tManager *mgr, tBddNode *node)},
+  \item makro \texttt{bddThrowError(tError e, tManager *mgr)},
+  \item mno¾ina booleovských funkcií
+  \begin{itemize}
+    \item\texttt{tBddNode *bddOr(tBddNode *x,tBddNode *y)},
+    \item\texttt{tBddNode *bddNor(tBddNode *x,tBddNode *y)},
+    \item\texttt{tBddNode *bddAnd(tBddNode *x,tBddNode *y)},
+    \item\texttt{tBddNode *bddNand(tBddNode *x,tBddNode *y)},
+    \item\texttt{tBddNode *bddXor(tBddNode *x,tBddNode *y)},
+    \item\texttt{tBddNode *bddImp(tBddNode *x,tBddNode *y)},
+    \item\texttt{tBddNode *bddNeg(tBddNode *x,tBddNode *y)}.
+  \end{itemize}
+\end{itemize}

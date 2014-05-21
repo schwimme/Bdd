@@ -3,35 +3,25 @@
 # E-mail: bidlom AT fit vutbr cz
 #===========================================
 # asi budete chtit prejmenovat:
-CO=projekt
+PROJ=projekt
+TITLE=desky
 
-all: $(CO).pdf
-	rm -f *.dvi *.log $(CO).blg $(CO).bbl $(CO).toc *.aux $(CO).out $(CO).lof
+all: $(PROJ).pdf
+	rm -f *.dvi *.log $(PROJ).blg $(PROJ).bbl $(PROJ).toc *.aux $(PROJ).out $(PROJ).lof
 	rm -f *~
 
-pdf: $(CO).pdf
+pdf: $(PROJ).pdf
 
-$(CO).ps: $(CO).dvi
-	dvips $(CO)
+$(PROJ).pdf: clean
+	pdflatex $(PROJ)
+	bibtex $(PROJ)
+	pdflatex $(PROJ)
+	pdflatex $(PROJ)
 
-$(CO).pdf: clean
-	vlna -l -m -n -v KkSsVvZzOoUuAaIi $(CO).tex
-	pdflatex $(CO)
-	bibtex $(CO)
-	pdflatex $(CO)
-	pdflatex $(CO)
 
-$(CO).dvi: $(CO).tex 
-	latex $(CO)
-	# bibtex $(CO)
-#	latex $(CO)
-	latex $(CO)
-
-desky:
-#	latex desky
-#	dvips desky
-#	dvipdf desky
-	pdflatex desky
+$(TITLE):
+	pdflatex $(TITLE)
+	rm -f $(TITLE).aux $(TITLE).log
 
 picx:
 	convert fig/bdd1.eps fig/bdd1.pdf
@@ -41,11 +31,12 @@ picx:
 	convert fig/bdd6.eps fig/bdd6.pdf
 
 clean:
-	rm -f *.dvi *.log $(CO).blg $(CO).bbl $(CO).toc *.aux $(CO).out $(CO).lof
-	rm -f *~
+	rm -f *.dvi *.log $(PROJ).blg $(PROJ).bbl $(PROJ).toc *.aux $(PROJ).out $(PROJ).lof
+	rm -f *~ $(TITLE).aux $(TITLE).log
 
 del:
-	rm -f $(CO).pdf
+	rm -f *.pdf
+
 pack:
 	@tar czvf bp-xtrosk00.tar.gz *.tex *.bib *.bst ./fig/* \
 makefile \

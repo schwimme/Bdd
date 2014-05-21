@@ -47,6 +47,7 @@ void bddDestroy(tManager *);
 tError bddCreateTerminal(tManager *,char *,tBddNode **);
 tError bddCreateNode(tManager *, char *, tBddNode *, tBddNode *,tBddNode **);
 tError bddNewNode(tManager *, unsigned int, tBddNode *, tBddNode *,tBddNode **);
+
 void printNodeValue(tManager *,tBddNode *);
 void printTree(tManager *, tBddNode *);
 void printNodeInfo(tManager *, tBddNode *);

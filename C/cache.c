@@ -1,9 +1,7 @@
 #include"cache.h"
 
 unsigned int cacheHash(tBddNode * high, tBddNode * low, unsigned int var){
-  unsigned int res;
-  if(high == low) res = var;
-  else res = var + 5;
+  unsigned int res = high->var*(low->var + var);
   return res % HSIZE;
 }
 
