@@ -5,39 +5,43 @@
 /**************************/
 
 /*
-  Modul:    head - test file
+  f(x1,x2,x3) = x1*x2 + x2*!x3
 */
 #include"bdd.h"
 
-tBddNode * Son, *Soff, *Sset, *Scount;
-
-tBddNode * func(tBddNode *x, tBddNode *y){
-  if(x == y)                  return x;
-  if(x == Soff || y == Soff)  return Soff;
-  if(x == Son)                return y;
-  if(y == Son)                return x;
-  return Scount;
-}
-
 int main(){
-  tManager mgr;
-  // tBddNode *xOnOff, *xSetCount, *tmp;
-  
-  bddInit(&mgr,BDD_SMALL);
+  tError e;     // zachytavanie chybovych stavov
 
-  // bddCreateTerminal(&mgr,"S_on",   &Son);
-  // bddCreateTerminal(&mgr,"S_off",  &Soff);
-  // bddCreateTerminal(&mgr,"S_set",  &Sset);
-  // bddCreateTerminal(&mgr,"S_count",&Scount);
+  tManager mgr; // bdd manager
+  tBddNode *x1, *x2, *x3; // premenne x1, x2 a x3
+  tBddNode *tmp;          // pomocny ukazatel
+  e = bddInit(&mgr,BDD_SMALL); // inicializacia managera na velkost bdd_small 
+  if(e) bddThrowError(e,&mgr);
+
   
-  // bddCreateNode(&mgr,"X_on_off",   Son, Soff,  &xOnOff);
-  // bddCreateNode(&mgr,"X_count_set",Scount,Sset,&xSetCount);
+  // vytvorenie uzlov pre premenne x1 x2 a x3
+  // bddCreateNode(manager,label premennej, vysoky naslednik, nizky naslednik, vystup)
+  e = bddCreateNode(&mgr,"x1",bddTrue,bddFalse,&x1); 
+  if(e) bddThrowError(e,&mgr);
+  e = bddCreateNode(&mgr,"x2",bddTrue,bddFalse,&x2);
+  if(e) bddThrowError(e,&mgr);
+  e = bddCreateNode(&mgr,"x3",bddTrue,bddFalse,&x3);
+  if(e) bddThrowError(e,&mgr);
   
-  // tmp = bddApply(&mgr,xOnOff,xSetCount,func);
-  // nodeDecRef(&mgr,xOnOff);
-  // nodeDecRef(&mgr,xSetCount);
+  tmp = bddApply(&mgr,x1,x2,bddAnd);  // x1*x2
+  nodeDecRef(&mgr,x1); // uzol x1 uz nepotrebujeme
   
-  // printTree(&mgr,tmp);
+  x1 = bddApply(&mgr,x3,NULL,bddNeg); // !x3
+  nodeDecRef(&mgr,x3); // uzol x3 uz nepotrebujeme
+  
+  x3 = bddApply(&mgr,x2,x1,bddAnd);  // x2*!x3
+  nodeDecRef(&mgr,x1); // uzol !x3 uz nepotrebujeme
+  nodeDecRef(&mgr,x2); // uzol x2 uz nepotrebujeme
+  
+  x1 = bddApply(&mgr,tmp,x3,bddOr);  // x1*x2 + x2*!x3
+  
+  printTree(&mgr,x1);
+  
   
   bddDestroy(&mgr);
 }

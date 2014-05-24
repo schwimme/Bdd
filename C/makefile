@@ -33,6 +33,8 @@ meas:
 app:
 	$(CC) $(FLAGS) $(OBJ) main.c -o $(OUTPUT)
 
+run:
+	./$(OUTPUT)
 t-init:
 	$(CC) $(FLAGS) $(OBJ) measurement.o tests/t-init.c -o t-init
 	./t-init
